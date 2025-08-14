@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Controle Financeiro Pro</title>
-
+    
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-512x512.png">
     <meta name="theme-color" content="#1877f2"/>
@@ -40,11 +40,29 @@
             color: var(--primary-color);
         }
         h1 { font-size: 2rem; margin-bottom: 10px; }
-        h2 { 
-            font-size: 1.5rem; 
-            border-bottom: 1px solid var(--border-color); 
-            padding-bottom: 10px; 
-            margin-bottom: 25px;
+        h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 25px; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+        
+        .results .result-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.25rem;
+            padding: 12px 0;
+        }
+        .results .result-item:not(:last-child) { border-bottom: 1px solid var(--bg-color); }
+        .results span:first-child { font-weight: 500; }
+        #saldoFinal { font-weight: bold; font-size: 1.75rem; }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
         .input-group { 
             margin-bottom: 18px;
@@ -68,12 +86,7 @@
             transition: opacity 0.2s;
         }
         .icon:hover { opacity: 1; }
-        .input-group label[contenteditable="true"] {
-            padding: 3px 5px;
-            border: 1px dashed var(--primary-color);
-            background-color: #e7f3ff;
-            outline: none;
-        }
+        
         .input-group input {
             width: 100%;
             padding: 10px 12px;
@@ -148,7 +161,6 @@
         .warning-action { background-color: #f5a623; }
         .danger-action { background-color: var(--red); }
         .info-action { background-color: var(--primary-color); }
-        .secondary-action { background-color: var(--secondary-btn-bg); color: var(--secondary-btn-text); }
 
         .history-summary { padding: 15px; border: 1px dashed var(--border-color); }
         .history-summary h3 { margin-top: 0; }
@@ -218,7 +230,7 @@
                 const totalRendasEl = document.getElementById('totalRendas');
                 const totalGastosEl = document.getElementById('totalGastos');
                 const saldoFinalEl = document.getElementById('saldoFinal');
-                let allValueInputs = [];
+                let allValueInputs = []; 
                 let currentData = {};
 
                 const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -348,10 +360,86 @@
                     }
                 };
 
+                // --- Lógica de Categorias Dinâmicas ---
+                const getCategories = () => JSON.parse(localStorage.getItem('categories')) || [];
+                const saveCategories = (categories) => {
+                    localStorage.setItem('categories', JSON.stringify(categories));
+                    renderCategories();
+                    updateQuickAddOptions();
+                    // Garante que a lista de inputs seja atualizada antes de calcular
+                    allValueInputs = document.querySelectorAll('.valor-input');
+                    calculateAndSave();
+                };
+                
+                const handleEditLabel = (id) => {
+                    let categories = getCategories();
+                    const catIndex = categories.findIndex(c => c.id === id);
+                    if (catIndex === -1) return;
+
+                    const oldLabel = categories[catIndex].label;
+                    const newLabel = prompt("Digite o novo nome para a categoria:", oldLabel);
+
+                    if (newLabel && newLabel.trim() !== '' && newLabel.trim() !== oldLabel) {
+                        categories[catIndex].label = newLabel.trim();
+                        saveCategories(categories);
+                    }
+                };
+
+                const handleDeleteCategory = (id) => {
+                    let categories = getCategories();
+                    const catIndex = categories.findIndex(c => c.id === id);
+                    if (catIndex > -1) {
+                        if (confirm(`Tem certeza que deseja excluir a categoria "${categories[catIndex].label}"? O valor inserido nela também será perdido.`)) {
+                            categories.splice(catIndex, 1);
+                            
+                            const savedData = JSON.parse(localStorage.getItem('financeData_current')) || {};
+                            if (savedData[id]) {
+                                delete savedData[id];
+                                localStorage.setItem('financeData_current', JSON.stringify(savedData));
+                            }
+                            
+                            saveCategories(categories);
+                            location.reload(); // Recarrega para garantir a limpeza completa
+                        }
+                    }
+                };
+                
                 const createCategoryInput = (cat) => {
                     const div = document.createElement('div');
                     div.className = 'input-group';
-                    div.innerHTML = `<label for="${cat.id}">${cat.label}</label><input type="number" step="0.01" id="${cat.id}" class="valor-input" placeholder="0.00" value="">`;
+
+                    const label = document.createElement('label');
+                    label.htmlFor = cat.id;
+                    label.textContent = cat.label;
+
+                    const icons = document.createElement('span');
+                    icons.className = 'action-icons';
+                    
+                    const editIcon = document.createElement('span');
+                    editIcon.className = 'icon';
+                    editIcon.title = 'Editar nome';
+                    editIcon.textContent = '✏️';
+                    editIcon.onclick = () => handleEditLabel(cat.id);
+                    
+                    const deleteIcon = document.createElement('span');
+                    deleteIcon.className = 'icon';
+                    deleteIcon.title = 'Excluir categoria';
+                    deleteIcon.textContent = '🗑️';
+                    deleteIcon.onclick = () => handleDeleteCategory(cat.id);
+
+                    icons.appendChild(editIcon);
+                    icons.appendChild(deleteIcon);
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.step = '0.01';
+                    input.id = cat.id;
+                    input.className = 'valor-input';
+                    input.placeholder = '0.00';
+
+                    div.appendChild(label);
+                    div.appendChild(icons);
+                    div.appendChild(input);
                     return div;
                 };
 
@@ -363,12 +451,14 @@
                     const categories = getCategories();
                     categories.push(newCategory);
                     saveCategories(categories);
-                    location.reload();
+                    // Rerenderiza sem recarregar a página
+                    renderCategories();
+                    updateQuickAddOptions();
+                    allValueInputs = document.querySelectorAll('.valor-input');
+                    setupInputEventListeners();
+                    loadData();
                 };
                 
-                const getCategories = () => JSON.parse(localStorage.getItem('categories')) || [];
-                const saveCategories = (categories) => localStorage.setItem('categories', JSON.stringify(categories));
-
                 const renderCategories = () => {
                     const rendasList = document.getElementById('rendas-list');
                     const gastosList = document.getElementById('gastos-list');
@@ -378,18 +468,11 @@
                     if (categories.length === 0) {
                         categories = [
                             {id: 'salario', label: 'Salário', type: 'rendas'},
-                            {id: 'mae', label: 'Ajuda Mãe', type: 'rendas'},
-                            {id: 'pix', label: 'Pix', type: 'rendas'},
-                            {id: 'rendaExtra', label: 'Renda Extra', type: 'rendas'},
-                            {id: 'cartoes', label: 'Cartões', type: 'gastos'},
-                            {id: 'cigarro', label: 'Cigarro', type: 'gastos'},
-                            {id: 'carro', label: 'Carro (Seguro+Financ.)', type: 'gastos'},
-                            {id: 'casa', label: 'Despesas da Casa', type: 'gastos'},
-                            {id: 'beck', label: 'Beck', type: 'gastos'},
-                            {id: 'extras', label: 'Outros Gastos Extras', type: 'gastos'},
-                            {id: 'lazer', label: 'Lazer', type: 'gastos'}
+                            {id: 'cartoes', label: 'Cartões', type: 'gastos'}
                         ];
                         saveCategories(categories);
+                        // Chama a si mesma para renderizar as categorias padrão
+                        return renderCategories();
                     }
                     categories.forEach(cat => {
                         const el = createCategoryInput(cat);
@@ -401,10 +484,16 @@
                     });
                     allValueInputs = document.querySelectorAll('.valor-input');
                 };
+
+                const setupInputEventListeners = () => {
+                    allValueInputs.forEach(i => {
+                        i.removeEventListener('input', () => calculateAndSave()); // Remove listener antigo para evitar duplicação
+                        i.addEventListener('input', () => calculateAndSave());
+                    });
+                };
                 
                 const setupEventListeners = () => {
                     document.getElementById('quickAddBtn').addEventListener('click', handleQuickAdd);
-                    allValueInputs.forEach(i => i.addEventListener('input', () => calculateAndSave()));
                     document.getElementById('closeMonthBtn').addEventListener('click', closeMonth);
                     document.getElementById('resetAllBtn').addEventListener('click', handleHardReset);
                     document.getElementById('addRendaBtn').addEventListener('click', () => addCategory('rendas'));
@@ -414,6 +503,7 @@
                         calculateAndSave();
                         showSaveFeedback(saveBtn);
                     });
+                    setupInputEventListeners();
                 };
                 
                 renderCategories();

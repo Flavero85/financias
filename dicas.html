@@ -174,20 +174,12 @@
             function generateAllTips() {
                 if (data && (data.totalGastos > 0 || data.totalRendas > 0)) {
                     noDataEl.style.display = 'none';
-
-                    if (data.saldoFinal < 0) {
-                        createTipCard('🚨', 'Alerta Máximo: Saldo Negativo!', `Seu saldo está negativo em <strong>${formatCurrency(data.saldoFinal)}</strong>. Esta é a prioridade número 1. É crucial reduzir despesas imediatamente.`, 'alert');
-                    }
-
-                    const findCategoryById = (id) => categories.find(c => c.id === id);
-                    const getCategoryLabel = (id, defaultLabel) => {
-                        const cat = findCategoryById(id);
-                        return cat ? cat.label : defaultLabel;
-                    };
-
-                    const cartoesLabel = getCategoryLabel('cartoes', 'Cartões');
-                    if (data.cartoes && data.totalRendas > 0 && (data.cartoes / data.totalRendas) > 0.3) {
-                        createTipCard('💳', `Foco nos ${cartoesLabel}`, `Seus gastos com ${cartoesLabel} (<strong>${formatCurrency(data.cartoes)}</strong>) consomem <strong>${((data.cartoes / data.totalRendas) * 100).toFixed(0)}%</strong> da sua renda. Este é um nível perigoso. Evite novas compras parceladas.`, 'warning');
+                    if (data.saldoFinal < 0) { createTipCard('🚨', 'Alerta Máximo: Saldo Negativo!', `Seu saldo está negativo em <strong>${formatCurrency(data.saldoFinal)}</strong>. Esta é a prioridade número 1. É crucial reduzir despesas imediatamente.`, 'alert'); }
+                    
+                    const cartoesCat = categories.find(c => c.id === 'cartoes');
+                    const cartoesLabel = cartoesCat ? cartoesCat.label : 'Cartões';
+                    if (data.cartoes && data.totalRendas > 0 && (data.cartoes / data.totalRendas) > 0.3) { 
+                        createTipCard('💳', `Foco em ${cartoesLabel}`, `Seus gastos com ${cartoesLabel} (<strong>${formatCurrency(data.cartoes)}</strong>) consomem <strong>${((data.cartoes / data.totalRendas) * 100).toFixed(0)}%</strong> da sua renda. Este é um nível perigoso. Evite novas compras parceladas.`, 'warning');
                     }
                     
                     if (data.saldoFinal > 0) {
