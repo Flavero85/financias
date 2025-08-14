@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Financeiro</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background-color: #f0f2f5; 
+            color: #333; 
+            margin: 0; 
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #1877f2;
+            border-bottom: 2px solid #1877f2;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        .summary-table td:first-child {
+            font-weight: bold;
+        }
+        .button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #1877f2;
+            color: white;
+            display: inline-block;
+        }
+        .toolbar { text-align: center; margin-bottom: 20px; }
+
+        @media print {
+            body { background-color: #fff; }
+            .toolbar { display: none; }
+            .container { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <button class="button" onclick="window.print()">Imprimir ou Salvar como PDF</button>
+        </div>
+        
+        <h1 id="report-title">Relatório Financeiro</h1>
+        
+        <h2>Rendas</h2>
+        <table id="rendas-table">
+            <thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        
+        <h2>Gastos</h2>
+        <table id="gastos-table">
+            <thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        
+        <h2>Resumo</h2>
+        <table id="summary-table" class="summary-table">
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const data = JSON.parse(localStorage.getItem('financeData_current'));
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            if (!data) {
+                document.body.innerHTML = '<h1>Nenhum dado encontrado. Por favor, preencha a calculadora primeiro.</h1>';
+                return;
+            }
+
+            const rendasTbody = document.querySelector('#rendas-table tbody');
+            categories.filter(c => c.type === 'rendas').forEach(item => {
+                if(data[item.id] > 0) {
+                    rendasTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`;
+                }
+            });
+
+            const gastosTbody = document.querySelector('#gastos-table tbody');
+            categories.filter(c => c.type === 'gastos').forEach(item => {
+                if(data[item.id] > 0) {
+                    gastosTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`;
+                }
+            });
+
+            const summaryTbody = document.querySelector('#summary-table tbody');
+            summaryTbody.innerHTML = `
+                <tr><td>Total de Rendas</td><td>${formatCurrency(data.totalRendas)}</td></tr>
+                <tr><td>Total de Gastos</td><td>${formatCurrency(data.totalGastos)}</td></tr>
+                <tr><td>Saldo Final</td><td>${formatCurrency(data.saldoFinal)}</td></tr>
+            `;
+
+            document.getElementById('report-title').innerText += ` - ${new Date().toLocaleDateString('pt-BR')}`;
+        };
+    </script>
+</body>
+</html>

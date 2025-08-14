@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Controle Financeiro Pro</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512x512.png">
+    <meta name="theme-color" content="#1877f2"/>
+    
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #1c1e21;
+            --primary-color: #1877f2;
+            --green: #42b72a;
+            --red: #fa3e3e;
+            --orange: #f0ad4e;
+            --border-color: #dddfe2;
+            --secondary-btn-bg: #e4e6eb;
+            --secondary-btn-text: #4b4f56;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            gap: 20px;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        h2 { 
+            font-size: 1.5rem; 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 10px; 
+            margin-bottom: 25px;
+        }
+        .input-group { 
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .input-group label {
+            display: inline-block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .action-icons {
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .icon {
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+        .icon:hover { opacity: 1; }
+        .input-group label[contenteditable="true"] {
+            padding: 3px 5px;
+            border: 1px dashed var(--primary-color);
+            background-color: #e7f3ff;
+            outline: none;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #1c1e21;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .input-group input.flash {
+            background-color: #d2ffc7;
+        }
+        
+        .quick-add-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .quick-add-panel .input-group {
+            flex: 2 1 180px;
+            margin-bottom: 0;
+        }
+         .quick-add-panel .input-group:nth-child(2) {
+            flex: 1 1 120px;
+        }
+        .quick-add-panel button {
+            flex: 1 1 120px;
+            margin-bottom: 0;
+        }
+        .quick-add-panel select, .quick-add-panel input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .button {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+        }
+        .add-category-btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px dashed var(--primary-color);
+            margin-top: 10px;
+            font-weight: normal;
+        }
+        .add-category-btn:hover {
+            background-color: #e7f3ff;
+        }
+        .primary-action { background-color: var(--green); }
+        .tertiary-action { background-color: var(--orange); }
+        .warning-action { background-color: #f5a623; }
+        .danger-action { background-color: var(--red); }
+        .info-action { background-color: var(--primary-color); }
+        .secondary-action { background-color: var(--secondary-btn-bg); color: var(--secondary-btn-text); }
+
+        .history-summary { padding: 15px; border: 1px dashed var(--border-color); }
+        .history-summary h3 { margin-top: 0; }
+        .history-summary p { margin: 5px 0; }
+        
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
+        .positivo { color: var(--green); }
+        .negativo { color: var(--red); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Controle Financeiro Pro</h1>
+
+        <div class="card">
+            <h3 style="margin-top:0;">Adicionar Lançamento</h3>
+            <div class="quick-add-panel">
+                <div class="input-group">
+                    <label for="quickAddCategory">Categoria</label>
+                    <select id="quickAddCategory"></select>
+                </div>
+                <div class="input-group">
+                    <label for="quickAddValue">Valor (R$)</label>
+                    <input type="number" id="quickAddValue" placeholder="50.00">
+                </div>
+                <button id="quickAddBtn" class="button primary-action">Adicionar</button>
+            </div>
+        </div>
+
+        <details class="card history-summary" open>
+            <summary><strong>Último Resumo Fechado</strong></summary>
+            <div id="previousMonthContainer"><p>Nenhum resumo encontrado.</p></div>
+        </details>
+
+        <div class="card results">
+            <div class="result-item"><span>Total de Rendas:</span><span id="totalRendas">R$ 0,00</span></div>
+            <div class="result-item"><span>Total de Gastos:</span><span id="totalGastos">R$ 0,00</span></div>
+            <div class="result-item"><span>Saldo Final:</span><span id="saldoFinal">R$ 0,00</span></div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>Rendas (+)</h2>
+                <div id="rendas-list"></div>
+                <button id="addRendaBtn" class="button add-category-btn">+ Nova Renda</button>
+            </div>
+            <div class="card">
+                <h2>Gastos (-)</h2>
+                <div id="gastos-list"></div>
+                <button id="addGastoBtn" class="button add-category-btn">+ Novo Gasto</button>
+            </div>
+        </div>
+
+        <div class="card actions">
+            <a href="dicas.html" target="_blank" class="button primary-action">Ver Dicas</a>
+            <a href="relatorio.html" target="_blank" class="button info-action">Ver Relatório</a>
+            <button id="saveBtn" class="button tertiary-action">Salvar Dados</button>
+            <button id="closeMonthBtn" class="button warning-action">Fechar Mês</button>
+            <button id="resetAllBtn" class="button danger-action">Reset Total</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const totalRendasEl = document.getElementById('totalRendas');
+                const totalGastosEl = document.getElementById('totalGastos');
+                const saldoFinalEl = document.getElementById('saldoFinal');
+                let allValueInputs = [];
+                let currentData = {};
+
+                const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const showSaveFeedback = (btn) => {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Salvo!';
+                    setTimeout(() => { btn.textContent = originalText; }, 1500);
+                };
+
+                const calculateAndSave = (inputToFlash = null) => {
+                    let totalRendas = 0, totalGastos = 0;
+                    const dataToSave = {};
+                    allValueInputs.forEach(input => {
+                        const value = parseFloat(input.value) || 0;
+                        const listContainer = input.closest('div[id$="-list"]');
+                        if (listContainer) {
+                            if(listContainer.id === 'rendas-list') totalRendas += value;
+                            else totalGastos += value;
+                        }
+                        dataToSave[input.id] = value;
+                    });
+                    const saldoFinal = totalRendas - totalGastos;
+                    totalRendasEl.textContent = formatCurrency(totalRendas);
+                    totalGastosEl.textContent = formatCurrency(totalGastos);
+                    saldoFinalEl.textContent = formatCurrency(saldoFinal);
+                    saldoFinalEl.className = saldoFinal >= 0 ? 'positivo' : 'negativo';
+                    dataToSave.totalRendas = totalRendas;
+                    dataToSave.totalGastos = totalGastos;
+                    dataToSave.saldoFinal = saldoFinal;
+                    currentData = dataToSave;
+                    localStorage.setItem('financeData_current', JSON.stringify(dataToSave));
+                    if (inputToFlash) {
+                        inputToFlash.classList.add('flash');
+                        setTimeout(() => inputToFlash.classList.remove('flash'), 500);
+                    }
+                };
+
+                const loadData = () => {
+                    const savedDataJSON = localStorage.getItem('financeData_current');
+                    if (savedDataJSON) {
+                        const savedData = JSON.parse(savedDataJSON);
+                        allValueInputs.forEach(input => {
+                            if (savedData[input.id] !== undefined) {
+                               input.value = savedData[input.id] || '';
+                            }
+                        });
+                    }
+                    calculateAndSave();
+                };
+                
+                const handleQuickAdd = () => {
+                    const categoryId = document.getElementById('quickAddCategory').value;
+                    const valueToAdd = parseFloat(document.getElementById('quickAddValue').value) || 0;
+                    if (valueToAdd === 0) return;
+                    const targetInput = document.getElementById(categoryId);
+                    if (targetInput) {
+                        const currentValue = parseFloat(targetInput.value) || 0;
+                        targetInput.value = (currentValue + valueToAdd).toFixed(2);
+                        calculateAndSave(targetInput);
+                        document.getElementById('quickAddValue').value = '';
+                    }
+                };
+
+                const closeMonth = () => {
+                    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                    const now = new Date();
+                    const monthKey = `historico_${now.getFullYear()}-${now.getMonth()}`;
+                    const monthName = `${monthNames[now.getMonth()]} de ${now.getFullYear()}`;
+                    if (confirm(`Você tem certeza que deseja fechar o mês de ${monthName} e zerar os campos?\n\n- Total de Rendas: ${formatCurrency(currentData.totalRendas)}\n- Total de Gastos: ${formatCurrency(currentData.totalGastos)}\n- Saldo: ${formatCurrency(currentData.saldoFinal)}\n\nEsta ação não pode ser desfeita.`)) {
+                        localStorage.setItem('lastClosedSummaryKey', monthKey);
+                        localStorage.setItem(monthKey, JSON.stringify(currentData));
+                        allValueInputs.forEach(input => input.value = '');
+                        calculateAndSave();
+                        alert("Resumo salvo com sucesso! A calculadora está pronta para o próximo mês.");
+                        location.reload();
+                    }
+                };
+
+                const loadPreviousMonthSummary = () => {
+                    const lastClosedKey = localStorage.getItem('lastClosedSummaryKey');
+                    if (lastClosedKey) {
+                        const summaryData = JSON.parse(localStorage.getItem(lastClosedKey));
+                        if(summaryData) {
+                            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                            const parts = lastClosedKey.split('_')[1].split('-');
+                            const year = parseInt(parts[0], 10);
+                            const monthIndex = parseInt(parts[1], 10);
+                            const monthName = `${monthNames[monthIndex]} de ${year}`;
+                            const container = document.getElementById('previousMonthContainer');
+                            container.innerHTML = `<h3>Resumo de ${monthName}</h3><p><strong>Rendas:</strong> ${formatCurrency(summaryData.totalRendas)}</p><p><strong>Gastos:</strong> ${formatCurrency(summaryData.totalGastos)}</p><p><strong>Saldo Final:</strong> <span class="${summaryData.saldoFinal >= 0 ? 'positivo':'negativo'}">${formatCurrency(summaryData.saldoFinal)}</span></p>`;
+                        }
+                    }
+                };
+
+                const updateQuickAddOptions = () => {
+                    const quickAddSelect = document.getElementById('quickAddCategory');
+                    quickAddSelect.innerHTML = '';
+                    const rendasOptgroup = document.createElement('optgroup');
+                    rendasOptgroup.label = "Rendas";
+                    document.querySelectorAll('#rendas-list .input-group').forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.querySelector('input').id;
+                        option.textContent = group.querySelector('label').textContent;
+                        rendasOptgroup.appendChild(option);
+                    });
+                    const gastosOptgroup = document.createElement('optgroup');
+                    gastosOptgroup.label = "Gastos";
+                    document.querySelectorAll('#gastos-list .input-group').forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.querySelector('input').id;
+                        option.textContent = group.querySelector('label').textContent;
+                        gastosOptgroup.appendChild(option);
+                    });
+                    quickAddSelect.appendChild(rendasOptgroup);
+                    quickAddSelect.appendChild(gastosOptgroup);
+                };
+
+                const handleHardReset = () => {
+                    if (confirm('ATENÇÃO: Isso apagará TODOS os dados salvos (mês atual, resumo fechado e categorias). Deseja recomeçar do zero?')) {
+                        const lastKey = localStorage.getItem('lastClosedSummaryKey');
+                        if (lastKey) localStorage.removeItem(lastKey);
+                        localStorage.removeItem('financeData_current');
+                        localStorage.removeItem('lastClosedSummaryKey');
+                        localStorage.removeItem('categories');
+                        alert('Ferramenta resetada com sucesso.');
+                        location.reload();
+                    }
+                };
+
+                const createCategoryInput = (cat) => {
+                    const div = document.createElement('div');
+                    div.className = 'input-group';
+                    div.innerHTML = `<label for="${cat.id}">${cat.label}</label><input type="number" step="0.01" id="${cat.id}" class="valor-input" placeholder="0.00" value="">`;
+                    return div;
+                };
+
+                const addCategory = (type) => {
+                    const label = prompt(`Digite o nome da nova categoria de ${type}:`);
+                    if (!label || label.trim() === '') return;
+                    const id = type.slice(0, 1) + '_' + Date.now();
+                    const newCategory = { id, label, type };
+                    const categories = getCategories();
+                    categories.push(newCategory);
+                    saveCategories(categories);
+                    location.reload();
+                };
+                
+                const getCategories = () => JSON.parse(localStorage.getItem('categories')) || [];
+                const saveCategories = (categories) => localStorage.setItem('categories', JSON.stringify(categories));
+
+                const renderCategories = () => {
+                    const rendasList = document.getElementById('rendas-list');
+                    const gastosList = document.getElementById('gastos-list');
+                    rendasList.innerHTML = '';
+                    gastosList.innerHTML = '';
+                    let categories = getCategories();
+                    if (categories.length === 0) {
+                        categories = [
+                            {id: 'salario', label: 'Salário', type: 'rendas'},
+                            {id: 'mae', label: 'Ajuda Mãe', type: 'rendas'},
+                            {id: 'pix', label: 'Pix', type: 'rendas'},
+                            {id: 'rendaExtra', label: 'Renda Extra', type: 'rendas'},
+                            {id: 'cartoes', label: 'Cartões', type: 'gastos'},
+                            {id: 'cigarro', label: 'Cigarro', type: 'gastos'},
+                            {id: 'carro', label: 'Carro (Seguro+Financ.)', type: 'gastos'},
+                            {id: 'casa', label: 'Despesas da Casa', type: 'gastos'},
+                            {id: 'beck', label: 'Beck', type: 'gastos'},
+                            {id: 'extras', label: 'Outros Gastos Extras', type: 'gastos'},
+                            {id: 'lazer', label: 'Lazer', type: 'gastos'}
+                        ];
+                        saveCategories(categories);
+                    }
+                    categories.forEach(cat => {
+                        const el = createCategoryInput(cat);
+                        if (cat.type === 'rendas') {
+                            rendasList.appendChild(el);
+                        } else if (cat.type === 'gastos') {
+                            gastosList.appendChild(el);
+                        }
+                    });
+                    allValueInputs = document.querySelectorAll('.valor-input');
+                };
+                
+                const setupEventListeners = () => {
+                    document.getElementById('quickAddBtn').addEventListener('click', handleQuickAdd);
+                    allValueInputs.forEach(i => i.addEventListener('input', () => calculateAndSave()));
+                    document.getElementById('closeMonthBtn').addEventListener('click', closeMonth);
+                    document.getElementById('resetAllBtn').addEventListener('click', handleHardReset);
+                    document.getElementById('addRendaBtn').addEventListener('click', () => addCategory('rendas'));
+                    document.getElementById('addGastoBtn').addEventListener('click', () => addCategory('gastos'));
+                    const saveBtn = document.getElementById('saveBtn');
+                    saveBtn.addEventListener('click', () => {
+                        calculateAndSave();
+                        showSaveFeedback(saveBtn);
+                    });
+                };
+                
+                renderCategories();
+                updateQuickAddOptions();
+                loadData();
+                loadPreviousMonthSummary();
+                setupEventListeners();
+
+            } catch (error) {
+                document.body.innerHTML = '<h1>Ocorreu um erro crítico.</h1>';
+                console.error("Erro fatal na aplicação:", error);
+            }
+        });
+    </script>
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker: Registro bem-sucedido');
+            })
+            .catch(err => {
+              console.log('ServiceWorker: Falha no registro: ', err);
+            });
+        });
+      }
+    </script>
+</body>
+</html>
