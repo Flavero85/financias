@@ -7,530 +7,351 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-512x512.png">
-    <meta name="theme-color" content="#1877f2"/>
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f9fc">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c1e">
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/imask"></script>
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         :root {
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-color: #1c1e21;
-            --primary-color: #1877f2;
-            --green: #42b72a;
-            --red: #fa3e3e;
-            --orange: #f0ad4e;
-            --border-color: #dddfe2;
-            --secondary-btn-bg: #e4e6eb;
-            --secondary-btn-text: #4b4f56;
+            --bg-color: #f7f9fc; --card-bg: #ffffff; --text-color: #1d1d1f; --text-secondary-color: #555;
+            --primary-color: #007aff; --green: #34c759; --red: #ff3b30; --orange: #ff9500;
+            --border-color: #e5e5ea; --input-bg: #fdfdfd; --shadow-color: rgba(0, 0, 0, 0.05);
+            --gradient-start: #f0f4ff;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
+        [data-theme='dark'] {
+            --bg-color: #000000; --card-bg: #1c1c1e; --text-color: #f5f5f7; --text-secondary-color: #aEaEaE;
+            --primary-color: #0a84ff; --green: #30d158; --red: #ff453a; --orange: #ff9f0a;
+            --border-color: #38383a; --input-bg: #2c2c2e; --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient-start: #1c1c1e;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: grid;
-            gap: 20px;
-        }
-        h1, h2, h3 {
-            text-align: center;
-            color: var(--primary-color);
-        }
-        h1 { font-size: 2rem; margin-bottom: 10px; }
-        h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 25px; }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-        
-        .results .result-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.25rem;
-            padding: 12px 0;
-        }
-        .results .result-item:not(:last-child) { border-bottom: 1px solid var(--bg-color); }
-        .results span:first-child { font-weight: 500; }
-        #saldoFinal { font-weight: bold; font-size: 1.75rem; }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .input-group { 
-            margin-bottom: 18px;
-            position: relative;
-        }
-        .input-group label {
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .action-icons {
-            display: inline-flex;
-            gap: 8px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        .icon {
-            cursor: pointer;
-            font-size: 0.9rem;
-            opacity: 0.4;
-            transition: opacity 0.2s;
-        }
-        .icon:hover { opacity: 1; }
-        
-        .input-group input {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #fff;
-            color: #1c1e21;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .input-group input.flash {
-            background-color: #d2ffc7;
-        }
-        
-        .quick-add-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-        .quick-add-panel .input-group {
-            flex: 2 1 180px;
-            margin-bottom: 0;
-        }
-         .quick-add-panel .input-group:nth-child(2) {
-            flex: 1 1 120px;
-        }
-        .quick-add-panel button {
-            flex: 1 1 120px;
-            margin-bottom: 0;
-        }
-        .quick-add-panel select, .quick-add-panel input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #fff;
-        }
-
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        .button {
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-        }
-        .add-category-btn {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px dashed var(--primary-color);
-            margin-top: 10px;
-            font-weight: normal;
-        }
-        .add-category-btn:hover {
-            background-color: #e7f3ff;
-        }
-        .primary-action { background-color: var(--green); }
-        .tertiary-action { background-color: var(--orange); }
-        .warning-action { background-color: #f5a623; }
-        .danger-action { background-color: var(--red); }
-        .info-action { background-color: var(--primary-color); }
-
-        .history-summary { padding: 15px; border: 1px dashed var(--border-color); }
-        .history-summary h3 { margin-top: 0; }
-        .history-summary p { margin: 5px 0; }
-        
-        @media (max-width: 768px) {
-            .main-content { grid-template-columns: 1fr; }
-        }
-        .positivo { color: var(--green); }
-        .negativo { color: var(--red); }
+        @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) {
+            --bg-color: #000000; --card-bg: #1c1c1e; --text-color: #f5f5f7; --text-secondary-color: #aEaEaE;
+            --primary-color: #0a84ff; --green: #30d158; --red: #ff453a; --orange: #ff9f0a;
+            --border-color: #38383a; --input-bg: #2c2c2e; --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient-start: #1c1c1e;
+        }}
+        @keyframes fadeInSlideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .new-item-animation { animation: fadeInSlideUp 0.4s ease-out forwards; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, var(--gradient-start) 0%, var(--bg-color) 250px); color: var(--text-color); margin: 0; padding: 24px; transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 960px; margin: 0 auto; display: grid; gap: 24px; }
+        h1, h2, h3 { text-align: center; margin: 0; color: var(--text-color); }
+        h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px;}
+        h3 { font-size: 1.2rem; font-weight: 600; margin-top: 0; margin-bottom: 20px; color: var(--text-secondary-color); }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: all 0.3s ease; }
+        .results .result-item { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; padding: 16px 0; }
+        .results .result-item:not(:last-child) { border-bottom: 1px solid var(--border-color); }
+        #saldoFinal { font-weight: 700; font-size: 2rem; }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: flex; align-items: center; gap: 6px; font-weight: 500; margin-bottom: 8px; color: var(--text-secondary-color); font-size: 0.95rem; }
+        .action-icons { display: inline-flex; gap: 10px; margin-left: auto; }
+        .icon { cursor: pointer; opacity: 0.6; transition: opacity 0.2s, transform 0.2s; }
+        .icon:hover { opacity: 1; transform: scale(1.1); }
+        input, select { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); transition: all 0.3s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent); }
+        input.flash { background-color: color-mix(in srgb, var(--green) 20%, var(--input-bg)); border-color: var(--green); }
+        .quick-add-panel { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+        .quick-add-panel .input-group { flex: 2 1 180px; margin: 0; }
+        .quick-add-panel .input-group:nth-child(2) { flex: 1 1 120px; }
+        .quick-add-panel button { flex: 1 1 120px; height: 46px; }
+        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .button { padding: 12px 16px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .add-category-btn { background-color: transparent; color: var(--primary-color); border: 2px dashed var(--border-color); font-weight: 500; padding: 14px; }
+        .primary-action { background-color: var(--green); } .tertiary-action { background-color: var(--orange); }
+        .warning-action { background-color: #ff9f0a; } .danger-action { background-color: var(--red); } .info-action { background-color: var(--primary-color); }
+        .budget-bar { height: 6px; background-color: var(--border-color); border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        .budget-bar-fill { height: 100%; background-color: var(--primary-color); border-radius: 3px; width: 0%; transition: width 0.3s ease; }
+        .budget-bar-fill.over { background-color: var(--red); }
+        dialog { border: 1px solid var(--border-color); border-radius: 12px; background-color: var(--card-bg); color: var(--text-color); padding: 30px; min-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        dialog h2 { margin-bottom: 20px; } dialog .form-group { margin-bottom: 15px; } dialog .form-group label { display: block; margin-bottom: 5px; }
+        dialog .checkbox-group { display: flex; align-items: center; gap: 10px; }
+        dialog .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .close-button { position: absolute; top: 15px; right: 15px; background: none; border: none; cursor: pointer; }
+        .history-summary-content { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+        .history-summary-text { flex: 1; min-width: 200px; }
+        .chart-container { position: relative; height: 180px; min-width: 180px; flex: 1; }
+        .positivo { color: var(--green); } .negativo { color: var(--red); }
+        footer { text-align: center; margin-top: 40px; color: var(--text-secondary-color); padding: 20px; border-top: 1px solid var(--border-color); }
+        footer a { color: var(--primary-color); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Controle Financeiro Pro</h1>
-
-        <div class="card">
-            <h3 style="margin-top:0;">Adicionar Lançamento</h3>
-            <div class="quick-add-panel">
-                <div class="input-group">
-                    <label for="quickAddCategory">Categoria</label>
-                    <select id="quickAddCategory"></select>
-                </div>
-                <div class="input-group">
-                    <label for="quickAddValue">Valor (R$)</label>
-                    <input type="number" id="quickAddValue" placeholder="50.00">
-                </div>
-                <button id="quickAddBtn" class="button primary-action">Adicionar</button>
-            </div>
-        </div>
-
-        <details class="card history-summary" open>
-            <summary><strong>Último Resumo Fechado</strong></summary>
-            <div id="previousMonthContainer"><p>Nenhum resumo encontrado.</p></div>
-        </details>
-
-        <div class="card results">
-            <div class="result-item"><span>Total de Rendas:</span><span id="totalRendas">R$ 0,00</span></div>
-            <div class="result-item"><span>Total de Gastos:</span><span id="totalGastos">R$ 0,00</span></div>
-            <div class="result-item"><span>Saldo Final:</span><span id="saldoFinal">R$ 0,00</span></div>
-        </div>
-
-        <div class="main-content">
-            <div class="card">
-                <h2>Rendas (+)</h2>
-                <div id="rendas-list"></div>
-                <button id="addRendaBtn" class="button add-category-btn">+ Nova Renda</button>
-            </div>
-            <div class="card">
-                <h2>Gastos (-)</h2>
-                <div id="gastos-list"></div>
-                <button id="addGastoBtn" class="button add-category-btn">+ Novo Gasto</button>
-            </div>
-        </div>
-
+        <div class="card"><h3 style="margin-top:0;">Adicionar Lançamento</h3><div class="quick-add-panel"><div class="input-group"><label for="quickAddCategory">Categoria</label><select id="quickAddCategory"></select></div><div class="input-group"><label for="quickAddValue">Valor</label><input type="text" id="quickAddValue" placeholder="R$ 0,00"></div><button id="quickAddBtn" class="button primary-action">Adicionar</button></div></div>
+        <details class="card history-summary" open><summary><strong>Último Resumo Fechado</strong></summary><div id="previousMonthContainer"><p>Nenhum resumo encontrado.</p></div></details>
+        <div class="card results"><div class="result-item"><span>Total de Rendas:</span><span id="totalRendas">R$ 0,00</span></div><div class="result-item"><span>Total de Gastos:</span><span id="totalGastos">R$ 0,00</span></div><div class="result-item"><span>Saldo Final:</span><span id="saldoFinal">R$ 0,00</span></div></div>
+        <div class="main-content"><div class="card"><h2>Rendas (+)</h2><div id="rendas-list"></div><button id="addRendaBtn" class="button add-category-btn">+ Nova Renda</button></div><div class="card"><h2>Gastos (-)</h2><div id="gastos-list"></div><button id="addGastoBtn" class="button add-category-btn">+ Novo Gasto</button></div></div>
         <div class="card actions">
-            <a href="dicas.html" target="_blank" class="button primary-action">Ver Dicas</a>
-            <a href="relatorio.html" target="_blank" class="button info-action">Ver Relatório</a>
-            <button id="saveBtn" class="button tertiary-action">Salvar Dados</button>
-            <button id="closeMonthBtn" class="button warning-action">Fechar Mês</button>
-            <button id="resetAllBtn" class="button danger-action">Reset Total</button>
+            <a href="dicas.html" target="_blank" id="dicasBtn" class="button primary-action"><i data-lucide="lightbulb"></i> <span>Ver Dicas</span></a>
+            <a href="relatorio.html" target="_blank" class="button info-action"><i data-lucide="bar-chart-3"></i> <span>Ver Relatório</span></a>
+            <button id="saveBtn" class="button tertiary-action"><i data-lucide="save"></i> <span>Salvar Dados</span></button>
+            <button id="closeMonthBtn" class="button warning-action"><i data-lucide="archive"></i> <span>Fechar Mês</span></button>
+            <button id="resetAllBtn" class="button danger-action"><i data-lucide="skull"></i> <span>Reset Total</span></button>
+            <div class="theme-selector" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding-top: 20px; border-top: 1px solid var(--border-color);"><label for="theme-select">🎨 Tema:</label><select id="theme-select"><option value="auto">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                const totalRendasEl = document.getElementById('totalRendas');
-                const totalGastosEl = document.getElementById('totalGastos');
-                const saldoFinalEl = document.getElementById('saldoFinal');
-                let allValueInputs = []; 
-                let currentData = {};
+    <dialog id="category-modal"><button class="close-button" onclick="this.closest('dialog').close()"><i data-lucide="x"></i></button><h2 id="modal-title">Nova Categoria</h2><form id="category-form"><input type="hidden" id="modal-category-id"><input type="hidden" id="modal-category-type"><div class="form-group"><label for="modal-category-name">Nome da Categoria</label><input type="text" id="modal-category-name" required></div><div class="form-group"><label for="modal-category-budget">Orçamento (Meta Mensal, opcional)</label><input type="text" id="modal-category-budget" placeholder="Ex: 500,00"></div><div class="form-group checkbox-group"><input type="checkbox" id="modal-category-recurring"><label for="modal-category-recurring">É um lançamento recorrente?</label></div><div class="modal-actions"><button type="button" class="button danger-action" onclick="this.closest('dialog').close()">Cancelar</button><button type="submit" class="button primary-action">Salvar</button></div></form></dialog>
 
-                const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                const showSaveFeedback = (btn) => {
-                    const originalText = btn.textContent;
-                    btn.textContent = 'Salvo!';
-                    setTimeout(() => { btn.textContent = originalText; }, 1500);
-                };
-
-                const calculateAndSave = (inputToFlash = null) => {
-                    let totalRendas = 0, totalGastos = 0;
-                    const dataToSave = {};
-                    allValueInputs.forEach(input => {
-                        const value = parseFloat(input.value) || 0;
-                        const listContainer = input.closest('div[id$="-list"]');
-                        if (listContainer) {
-                            if(listContainer.id === 'rendas-list') totalRendas += value;
-                            else totalGastos += value;
-                        }
-                        dataToSave[input.id] = value;
-                    });
-                    const saldoFinal = totalRendas - totalGastos;
-                    totalRendasEl.textContent = formatCurrency(totalRendas);
-                    totalGastosEl.textContent = formatCurrency(totalGastos);
-                    saldoFinalEl.textContent = formatCurrency(saldoFinal);
-                    saldoFinalEl.className = saldoFinal >= 0 ? 'positivo' : 'negativo';
-                    dataToSave.totalRendas = totalRendas;
-                    dataToSave.totalGastos = totalGastos;
-                    dataToSave.saldoFinal = saldoFinal;
-                    currentData = dataToSave;
-                    localStorage.setItem('financeData_current', JSON.stringify(dataToSave));
-                    if (inputToFlash) {
-                        inputToFlash.classList.add('flash');
-                        setTimeout(() => inputToFlash.classList.remove('flash'), 500);
-                    }
-                };
-
-                const loadData = () => {
-                    const savedDataJSON = localStorage.getItem('financeData_current');
-                    if (savedDataJSON) {
-                        const savedData = JSON.parse(savedDataJSON);
-                        allValueInputs.forEach(input => {
-                            if (savedData[input.id] !== undefined) {
-                               input.value = savedData[input.id] || '';
-                            }
-                        });
-                    }
-                    calculateAndSave();
-                };
-                
-                const handleQuickAdd = () => {
-                    const categoryId = document.getElementById('quickAddCategory').value;
-                    const valueToAdd = parseFloat(document.getElementById('quickAddValue').value) || 0;
-                    if (valueToAdd === 0) return;
-                    const targetInput = document.getElementById(categoryId);
-                    if (targetInput) {
-                        const currentValue = parseFloat(targetInput.value) || 0;
-                        targetInput.value = (currentValue + valueToAdd).toFixed(2);
-                        calculateAndSave(targetInput);
-                        document.getElementById('quickAddValue').value = '';
-                    }
-                };
-
-                const closeMonth = () => {
-                    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-                    const now = new Date();
-                    const monthKey = `historico_${now.getFullYear()}-${now.getMonth()}`;
-                    const monthName = `${monthNames[now.getMonth()]} de ${now.getFullYear()}`;
-                    if (confirm(`Você tem certeza que deseja fechar o mês de ${monthName} e zerar os campos?\n\n- Total de Rendas: ${formatCurrency(currentData.totalRendas)}\n- Total de Gastos: ${formatCurrency(currentData.totalGastos)}\n- Saldo: ${formatCurrency(currentData.saldoFinal)}\n\nEsta ação não pode ser desfeita.`)) {
-                        localStorage.setItem('lastClosedSummaryKey', monthKey);
-                        localStorage.setItem(monthKey, JSON.stringify(currentData));
-                        allValueInputs.forEach(input => input.value = '');
-                        calculateAndSave();
-                        alert("Resumo salvo com sucesso! A calculadora está pronta para o próximo mês.");
-                        location.reload();
-                    }
-                };
-
-                const loadPreviousMonthSummary = () => {
-                    const lastClosedKey = localStorage.getItem('lastClosedSummaryKey');
-                    if (lastClosedKey) {
-                        const summaryData = JSON.parse(localStorage.getItem(lastClosedKey));
-                        if(summaryData) {
-                            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-                            const parts = lastClosedKey.split('_')[1].split('-');
-                            const year = parseInt(parts[0], 10);
-                            const monthIndex = parseInt(parts[1], 10);
-                            const monthName = `${monthNames[monthIndex]} de ${year}`;
-                            const container = document.getElementById('previousMonthContainer');
-                            container.innerHTML = `<h3>Resumo de ${monthName}</h3><p><strong>Rendas:</strong> ${formatCurrency(summaryData.totalRendas)}</p><p><strong>Gastos:</strong> ${formatCurrency(summaryData.totalGastos)}</p><p><strong>Saldo Final:</strong> <span class="${summaryData.saldoFinal >= 0 ? 'positivo':'negativo'}">${formatCurrency(summaryData.saldoFinal)}</span></p>`;
-                        }
-                    }
-                };
-
-                const updateQuickAddOptions = () => {
-                    const quickAddSelect = document.getElementById('quickAddCategory');
-                    quickAddSelect.innerHTML = '';
-                    const rendasOptgroup = document.createElement('optgroup');
-                    rendasOptgroup.label = "Rendas";
-                    document.querySelectorAll('#rendas-list .input-group').forEach(group => {
-                        const option = document.createElement('option');
-                        option.value = group.querySelector('input').id;
-                        option.textContent = group.querySelector('label').textContent;
-                        rendasOptgroup.appendChild(option);
-                    });
-                    const gastosOptgroup = document.createElement('optgroup');
-                    gastosOptgroup.label = "Gastos";
-                    document.querySelectorAll('#gastos-list .input-group').forEach(group => {
-                        const option = document.createElement('option');
-                        option.value = group.querySelector('input').id;
-                        option.textContent = group.querySelector('label').textContent;
-                        gastosOptgroup.appendChild(option);
-                    });
-                    quickAddSelect.appendChild(rendasOptgroup);
-                    quickAddSelect.appendChild(gastosOptgroup);
-                };
-
-                const handleHardReset = () => {
-                    if (confirm('ATENÇÃO: Isso apagará TODOS os dados salvos (mês atual, resumo fechado e categorias). Deseja recomeçar do zero?')) {
-                        const lastKey = localStorage.getItem('lastClosedSummaryKey');
-                        if (lastKey) localStorage.removeItem(lastKey);
-                        localStorage.removeItem('financeData_current');
-                        localStorage.removeItem('lastClosedSummaryKey');
-                        localStorage.removeItem('categories');
-                        alert('Ferramenta resetada com sucesso.');
-                        location.reload();
-                    }
-                };
-
-                // --- Lógica de Categorias Dinâmicas ---
-                const getCategories = () => JSON.parse(localStorage.getItem('categories')) || [];
-                const saveCategories = (categories) => {
-                    localStorage.setItem('categories', JSON.stringify(categories));
-                    renderCategories();
-                    updateQuickAddOptions();
-                    // Garante que a lista de inputs seja atualizada antes de calcular
-                    allValueInputs = document.querySelectorAll('.valor-input');
-                    calculateAndSave();
-                };
-                
-                const handleEditLabel = (id) => {
-                    let categories = getCategories();
-                    const catIndex = categories.findIndex(c => c.id === id);
-                    if (catIndex === -1) return;
-
-                    const oldLabel = categories[catIndex].label;
-                    const newLabel = prompt("Digite o novo nome para a categoria:", oldLabel);
-
-                    if (newLabel && newLabel.trim() !== '' && newLabel.trim() !== oldLabel) {
-                        categories[catIndex].label = newLabel.trim();
-                        saveCategories(categories);
-                    }
-                };
-
-                const handleDeleteCategory = (id) => {
-                    let categories = getCategories();
-                    const catIndex = categories.findIndex(c => c.id === id);
-                    if (catIndex > -1) {
-                        if (confirm(`Tem certeza que deseja excluir a categoria "${categories[catIndex].label}"? O valor inserido nela também será perdido.`)) {
-                            categories.splice(catIndex, 1);
-                            
-                            const savedData = JSON.parse(localStorage.getItem('financeData_current')) || {};
-                            if (savedData[id]) {
-                                delete savedData[id];
-                                localStorage.setItem('financeData_current', JSON.stringify(savedData));
-                            }
-                            
-                            saveCategories(categories);
-                            location.reload(); // Recarrega para garantir a limpeza completa
-                        }
-                    }
-                };
-                
-                const createCategoryInput = (cat) => {
-                    const div = document.createElement('div');
-                    div.className = 'input-group';
-
-                    const label = document.createElement('label');
-                    label.htmlFor = cat.id;
-                    label.textContent = cat.label;
-
-                    const icons = document.createElement('span');
-                    icons.className = 'action-icons';
-                    
-                    const editIcon = document.createElement('span');
-                    editIcon.className = 'icon';
-                    editIcon.title = 'Editar nome';
-                    editIcon.textContent = '✏️';
-                    editIcon.onclick = () => handleEditLabel(cat.id);
-                    
-                    const deleteIcon = document.createElement('span');
-                    deleteIcon.className = 'icon';
-                    deleteIcon.title = 'Excluir categoria';
-                    deleteIcon.textContent = '🗑️';
-                    deleteIcon.onclick = () => handleDeleteCategory(cat.id);
-
-                    icons.appendChild(editIcon);
-                    icons.appendChild(deleteIcon);
-
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.step = '0.01';
-                    input.id = cat.id;
-                    input.className = 'valor-input';
-                    input.placeholder = '0.00';
-
-                    div.appendChild(label);
-                    div.appendChild(icons);
-                    div.appendChild(input);
-                    return div;
-                };
-
-                const addCategory = (type) => {
-                    const label = prompt(`Digite o nome da nova categoria de ${type}:`);
-                    if (!label || label.trim() === '') return;
-                    const id = type.slice(0, 1) + '_' + Date.now();
-                    const newCategory = { id, label, type };
-                    const categories = getCategories();
-                    categories.push(newCategory);
-                    saveCategories(categories);
-                    // Rerenderiza sem recarregar a página
-                    renderCategories();
-                    updateQuickAddOptions();
-                    allValueInputs = document.querySelectorAll('.valor-input');
-                    setupInputEventListeners();
-                    loadData();
-                };
-                
-                const renderCategories = () => {
-                    const rendasList = document.getElementById('rendas-list');
-                    const gastosList = document.getElementById('gastos-list');
-                    rendasList.innerHTML = '';
-                    gastosList.innerHTML = '';
-                    let categories = getCategories();
-                    if (categories.length === 0) {
-                        categories = [
-                            {id: 'salario', label: 'Salário', type: 'rendas'},
-                            {id: 'cartoes', label: 'Cartões', type: 'gastos'}
-                        ];
-                        saveCategories(categories);
-                        // Chama a si mesma para renderizar as categorias padrão
-                        return renderCategories();
-                    }
-                    categories.forEach(cat => {
-                        const el = createCategoryInput(cat);
-                        if (cat.type === 'rendas') {
-                            rendasList.appendChild(el);
-                        } else if (cat.type === 'gastos') {
-                            gastosList.appendChild(el);
-                        }
-                    });
-                    allValueInputs = document.querySelectorAll('.valor-input');
-                };
-
-                const setupInputEventListeners = () => {
-                    allValueInputs.forEach(i => {
-                        i.removeEventListener('input', () => calculateAndSave()); // Remove listener antigo para evitar duplicação
-                        i.addEventListener('input', () => calculateAndSave());
-                    });
-                };
-                
-                const setupEventListeners = () => {
-                    document.getElementById('quickAddBtn').addEventListener('click', handleQuickAdd);
-                    document.getElementById('closeMonthBtn').addEventListener('click', closeMonth);
-                    document.getElementById('resetAllBtn').addEventListener('click', handleHardReset);
-                    document.getElementById('addRendaBtn').addEventListener('click', () => addCategory('rendas'));
-                    document.getElementById('addGastoBtn').addEventListener('click', () => addCategory('gastos'));
-                    const saveBtn = document.getElementById('saveBtn');
-                    saveBtn.addEventListener('click', () => {
-                        calculateAndSave();
-                        showSaveFeedback(saveBtn);
-                    });
-                    setupInputEventListeners();
-                };
-                
-                renderCategories();
-                updateQuickAddOptions();
-                loadData();
-                loadPreviousMonthSummary();
-                setupEventListeners();
-
-            } catch (error) {
-                document.body.innerHTML = '<h1>Ocorreu um erro crítico.</h1>';
-                console.error("Erro fatal na aplicação:", error);
-            }
-        });
-    </script>
+    <footer>
+        <p>Desenvolvido por Gustavo Silva</p>
+        <a href="https://github.com/SEU-USUARIO-AQUI" target="_blank">
+            <i data-lucide="github"></i>
+            <span>Ver no GitHub</span>
+        </a>
+    </footer>
     
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./service-worker.js')
-            .then(registration => {
-              console.log('ServiceWorker: Registro bem-sucedido');
-            })
-            .catch(err => {
-              console.log('ServiceWorker: Falha no registro: ', err);
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // --- VARIÁVEIS GLOBAIS ---
+            let allValueInputs = []; let currentData = {}; let imaskInstances = {}; let summaryChart = null;
+            const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // --- FUNÇÕES DE LÓGICA PRINCIPAL ---
+            const applyInputMask = (element) => {
+                if (!element) return;
+                const maskOptions = { mask: 'R$ num', blocks: { num: { mask: Number, scale: 2, thousandsSeparator: '.', padFractionalZeros: true, radix: ',', mapToRadix: ['.'] }}};
+                if (imaskInstances[element.id]) imaskInstances[element.id].destroy();
+                imaskInstances[element.id] = IMask(element, maskOptions);
+            };
+            const calculateAndSave = (inputToFlash = null) => {
+                let totalRendas = 0, totalGastos = 0;
+                const dataToSave = {};
+                allValueInputs.forEach(input => {
+                    const unmaskedValue = imaskInstances[input.id] ? imaskInstances[input.id].unmaskedValue : '0';
+                    const value = parseFloat(unmaskedValue) || 0;
+                    if(input.closest('#rendas-list')) totalRendas += value; else if(input.closest('#gastos-list')) totalGastos += value;
+                    dataToSave[input.id] = value;
+                    const budgetBarFill = document.querySelector(`.budget-bar-fill[data-for='${input.id}']`);
+                    if (budgetBarFill) {
+                        const budget = parseFloat(budgetBarFill.dataset.budget) || 0;
+                        if (budget > 0) { const percentage = Math.min((value / budget) * 100, 100); budgetBarFill.style.width = `${percentage}%`; budgetBarFill.classList.toggle('over', value > budget); }
+                    }
+                });
+                const saldoFinal = totalRendas - totalGastos;
+                document.getElementById('totalRendas').textContent = formatCurrency(totalRendas);
+                document.getElementById('totalGastos').textContent = formatCurrency(totalGastos);
+                document.getElementById('saldoFinal').textContent = formatCurrency(saldoFinal);
+                document.getElementById('saldoFinal').className = saldoFinal >= 0 ? 'positivo' : 'negativo';
+                currentData = { ...dataToSave, totalRendas, totalGastos, saldoFinal };
+                localStorage.setItem('financeData_current', JSON.stringify(dataToSave));
+                if (inputToFlash) { inputToFlash.classList.add('flash'); setTimeout(() => inputToFlash.classList.remove('flash'), 500); }
+            };
+            const getCategories = () => JSON.parse(localStorage.getItem('categories')) || [];
+            const saveCategories = (categories) => { localStorage.setItem('categories', JSON.stringify(categories)); renderCategories(); };
+            const renderCategories = () => {
+                const rendasList = document.getElementById('rendas-list'); const gastosList = document.getElementById('gastos-list');
+                rendasList.innerHTML = ''; gastosList.innerHTML = '';
+                imaskInstances = {};
+                let categories = getCategories();
+                if (categories.length === 0) {
+                    categories = [ {id: 'r_1', label: 'Salário', type: 'rendas', budget: 0, isRecurring: true}, {id: 'g_1', label: 'Aluguel', type: 'gastos', budget: 0, isRecurring: true}, {id: 'g_2', label: 'Cartão de Crédito', type: 'gastos', budget: 1500, isRecurring: false}, {id: 'g_3', label: 'Supermercado', type: 'gastos', budget: 800, isRecurring: false} ];
+                    saveCategories(categories); return;
+                }
+                categories.forEach(cat => {
+                    const el = createCategoryInput(cat);
+                    if (cat.type === 'rendas') rendasList.appendChild(el); else gastosList.appendChild(el);
+                });
+                allValueInputs = document.querySelectorAll('.valor-input');
+                allValueInputs.forEach(applyInputMask);
+                lucide.createIcons();
+                updateQuickAddOptions();
+                loadData();
+            };
+            const createCategoryInput = (cat) => {
+                const div = document.createElement('div'); div.className = 'input-group new-item-animation';
+                const label = document.createElement('label'); label.htmlFor = cat.id;
+                const labelText = document.createElement('span'); labelText.textContent = cat.label;
+                if (cat.isRecurring) { const icon = document.createElement('i'); icon.dataset.lucide="repeat"; icon.className="icon"; label.appendChild(icon); }
+                label.appendChild(labelText);
+                const icons = document.createElement('span'); icons.className = 'action-icons';
+                icons.innerHTML = `<i data-lucide="pencil" class="icon" title="Editar" data-action="edit" data-id="${cat.id}"></i> <i data-lucide="trash-2" class="icon" title="Excluir" data-action="delete" data-id="${cat.id}"></i>`;
+                label.appendChild(icons);
+                const input = document.createElement('input'); input.type = 'text'; input.id = cat.id; input.className = 'valor-input'; input.placeholder = 'R$ 0,00';
+                div.appendChild(label); div.appendChild(input);
+                if (cat.budget && cat.budget > 0 && cat.type === 'gastos') {
+                    const budgetBar = document.createElement('div'); budgetBar.className = 'budget-bar';
+                    budgetBar.innerHTML = `<div class="budget-bar-fill" data-for="${cat.id}" data-budget="${cat.budget}"></div>`;
+                    div.appendChild(budgetBar);
+                }
+                return div;
+            };
+            const categoryModal = document.getElementById('category-modal');
+            const openCategoryModal = (mode, type, category = {}) => {
+                const form = document.getElementById('category-form'); form.reset();
+                document.getElementById('modal-title').textContent = mode === 'add' ? `Nova Categoria de ${type === 'rendas' ? 'Renda' : 'Gasto'}` : 'Editar Categoria';
+                document.getElementById('modal-category-type').value = type;
+                document.getElementById('modal-category-id').value = category.id || '';
+                document.getElementById('modal-category-name').value = category.label || '';
+                const budgetInput = document.getElementById('modal-category-budget');
+                if (imaskInstances[budgetInput.id]) imaskInstances[budgetInput.id].value = (category.budget || '').toString(); else applyInputMask(budgetInput);
+                document.getElementById('modal-category-recurring').checked = category.isRecurring || false;
+                categoryModal.showModal(); lucide.createIcons();
+            };
+            document.getElementById('category-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('modal-category-id').value;
+                const type = document.getElementById('modal-category-type').value;
+                const budgetInput = document.getElementById('modal-category-budget');
+                const budgetValue = imaskInstances[budgetInput.id] ? imaskInstances[budgetInput.id].unmaskedValue : '0';
+                const newCategoryData = {
+                    id: id || type.slice(0, 1) + '_' + Date.now(), label: document.getElementById('modal-category-name').value.trim(), type,
+                    budget: parseFloat(budgetValue) || 0, isRecurring: document.getElementById('modal-category-recurring').checked,
+                };
+                if (!newCategoryData.label) { alert("O nome da categoria não pode ser vazio."); return; }
+                let categories = getCategories();
+                const existingIndex = categories.findIndex(c => c.id === id);
+                if (existingIndex > -1) categories[existingIndex] = newCategoryData; else categories.push(newCategoryData);
+                saveCategories(categories); categoryModal.close();
             });
-        });
-      }
+            const handleDeleteCategory = (id) => {
+                let categories = getCategories(); const catIndex = categories.findIndex(c => c.id === id);
+                if (catIndex > -1) { if (confirm(`Tem certeza que deseja excluir a categoria "${categories[catIndex].label}"?`)) { categories.splice(catIndex, 1); saveCategories(categories); } }
+            };
+            const updateQuickAddOptions = () => {
+                const quickAddSelect = document.getElementById('quickAddCategory'); quickAddSelect.innerHTML = '';
+                ['rendas', 'gastos'].forEach(type => {
+                    const optgroup = document.createElement('optgroup'); optgroup.label = type.charAt(0).toUpperCase() + type.slice(1);
+                    document.querySelectorAll(`#${type}-list .input-group`).forEach(group => {
+                        const option = document.createElement('option'); option.value = group.querySelector('input').id;
+                        option.textContent = group.querySelector('label span').textContent;
+                        optgroup.appendChild(option);
+                    });
+                    quickAddSelect.appendChild(optgroup);
+                });
+            };
+            const loadData = () => {
+                const savedData = JSON.parse(localStorage.getItem('financeData_current')) || {};
+                allValueInputs.forEach(input => { if (savedData[input.id] !== undefined) { imaskInstances[input.id].value = savedData[input.id].toString(); } });
+                calculateAndSave();
+            };
+            const closeMonth = () => {
+                const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                const now = new Date(); const monthKey = `historico_${now.getFullYear()}-${now.getMonth()}`;
+                const monthName = `${monthNames[now.getMonth()]} de ${now.getFullYear()}`;
+                if (confirm(`Você tem certeza que deseja fechar o mês de ${monthName}?\n\n- Saldo Final: ${formatCurrency(currentData.saldoFinal)}\n\nEsta ação não pode ser desfeita.`)) {
+                    localStorage.setItem('lastClosedSummaryKey', monthKey);
+                    localStorage.setItem(monthKey, JSON.stringify(currentData));
+                    allValueInputs.forEach(input => imaskInstances[input.id].value = '');
+                    calculateAndSave(); alert("Resumo salvo com sucesso!"); location.reload();
+                }
+            };
+            const handleHardReset = () => {
+                if (confirm('ATENÇÃO: Isso apagará TODOS os dados salvos. Deseja recomeçar do zero?')) { localStorage.clear(); alert('Ferramenta resetada.'); location.reload(); }
+            };
+            const showSaveFeedback = (btn) => {
+                const originalText = btn.querySelector('span').textContent;
+                btn.querySelector('span').textContent = 'Salvo!';
+                setTimeout(() => { btn.querySelector('span').textContent = originalText; }, 1500);
+            };
+            const handleQuickAdd = () => {
+                const categoryId = document.getElementById('quickAddCategory').value;
+                const quickAddInput = document.getElementById('quickAddValue');
+                const valueToAdd = parseFloat(imaskInstances[quickAddInput.id].unmaskedValue) || 0;
+                if (valueToAdd === 0 || !categoryId) return;
+                const targetInput = document.getElementById(categoryId);
+                if (targetInput) {
+                    const currentValue = parseFloat(imaskInstances[targetInput.id].unmaskedValue) || 0;
+                    imaskInstances[targetInput.id].value = (currentValue + valueToAdd).toString();
+                    calculateAndSave(targetInput);
+                    imaskInstances[quickAddInput.id].value = '';
+                }
+            };
+            const loadPreviousMonthSummary = () => {
+                const lastClosedKey = localStorage.getItem('lastClosedSummaryKey');
+                const container = document.getElementById('previousMonthContainer');
+                if (!lastClosedKey) { container.innerHTML = '<p>Nenhum resumo encontrado.</p>'; return; }
+                const summaryData = JSON.parse(localStorage.getItem(lastClosedKey));
+                if(summaryData) {
+                    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                    const parts = lastClosedKey.split('_')[1].split('-');
+                    const year = parseInt(parts[0], 10); const monthIndex = parseInt(parts[1], 10);
+                    const monthName = `${monthNames[monthIndex]} de ${year}`;
+                    container.innerHTML = `<div class="history-summary-content"><div class="history-summary-text"><h3>Resumo de ${monthName}</h3><p><strong>Rendas:</strong> ${formatCurrency(summaryData.totalRendas)}</p><p><strong>Gastos:</strong> ${formatCurrency(summaryData.totalGastos)}</p><p><strong>Saldo Final:</strong> <span class="${summaryData.saldoFinal >= 0 ? 'positivo':'negativo'}">${formatCurrency(summaryData.saldoFinal)}</span></p></div><div class="chart-container"><canvas id="summaryChart"></canvas></div></div>`;
+                    renderSummaryChart(summaryData);
+                }
+            };
+            const renderSummaryChart = (summaryData) => {
+                const ctx = document.getElementById('summaryChart'); if (!ctx) return;
+                const allCategories = getCategories(); const labels = []; const data = [];
+                for (const key in summaryData) {
+                    if (key.startsWith('g_') && summaryData[key] > 0) {
+                        const category = allCategories.find(c => c.id === key);
+                        labels.push(category ? category.label : 'Gasto');
+                        data.push(summaryData[key]);
+                    }
+                }
+                if (summaryChart) { summaryChart.destroy(); }
+                if (data.length === 0) { ctx.parentElement.innerHTML = '<p>Sem dados de gastos para exibir.</p>'; return; }
+                summaryChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels, datasets: [{ label: 'Gastos', data, backgroundColor: [ '#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#5856d6', '#af52de' ], hoverOffset: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            };
+            
+            // --- FUNÇÃO CENTRAL DE EVENTOS (CORRIGIDA E COMPLETA) ---
+            const setupEventListeners = () => {
+                // Link para a página de Dicas
+                document.getElementById('dicasBtn').addEventListener('click', (e) => {
+                    // Previne o comportamento padrão do link, caso queira adicionar outra lógica no futuro
+                    // e.preventDefault(); 
+                    // No momento, apenas deixamos o link funcionar normalmente.
+                });
+
+                // Botões de ação principais
+                document.getElementById('quickAddBtn').addEventListener('click', handleQuickAdd);
+                document.getElementById('addRendaBtn').addEventListener('click', () => openCategoryModal('add', 'rendas'));
+                document.getElementById('addGastoBtn').addEventListener('click', () => openCategoryModal('add', 'gastos'));
+                document.getElementById('saveBtn').addEventListener('click', (e) => { calculateAndSave(); showSaveFeedback(e.currentTarget); });
+                document.getElementById('closeMonthBtn').addEventListener('click', closeMonth);
+                document.getElementById('resetAllBtn').addEventListener('click', handleHardReset);
+
+                // Listener para atualização automática de valores ao digitar
+                document.querySelector('.container').addEventListener('input', (e) => { 
+                    if (e.target.classList.contains('valor-input')) {
+                        calculateAndSave();
+                    } 
+                });
+
+                // Delegação de eventos para ícones de editar/deletar
+                const handleListClick = (event) => {
+                    const icon = event.target.closest('.icon'); if (!icon) return;
+                    const action = icon.dataset.action; const id = icon.dataset.id; if (!action || !id) return;
+                    if (action === 'edit') {
+                        const categories = getCategories(); const categoryToEdit = categories.find(c => c.id === id);
+                        if (categoryToEdit) { openCategoryModal('edit', categoryToEdit.type, categoryToEdit); }
+                    } else if (action === 'delete') { handleDeleteCategory(id); }
+                };
+                document.getElementById('rendas-list').addEventListener('click', handleListClick);
+                document.getElementById('gastos-list').addEventListener('click', handleListClick);
+            };
+
+            // --- INICIALIZAÇÃO ---
+            renderCategories();
+            setupEventListeners();
+            loadPreviousMonthSummary(); 
+            applyInputMask(document.getElementById('quickAddValue'));
+            
+            // Lógica do Tema
+            const themeSelect = document.getElementById('theme-select');
+            const userTheme = localStorage.getItem('theme');
+            const applyTheme = (theme) => { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); };
+            if (userTheme) { themeSelect.value = userTheme; applyTheme(userTheme); }
+            themeSelect.addEventListener('change', (e) => { const selectedTheme = e.target.value; localStorage.setItem('theme', selectedTheme); applyTheme(selectedTheme); });
+
+        } catch (error) { document.body.innerHTML = '<h1>Ocorreu um erro crítico.</h1>'; console.error("Erro fatal:", error); }
+    });
     </script>
 </body>
 </html>
