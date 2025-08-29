@@ -11,10 +11,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c1e">
 
     <style>
-        /* Importando a mesma fonte da aplicação principal */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        /* Aplicando as mesmas variáveis de cor e tema para consistência visual */
         :root {
             --bg-color: #f7f9fc; --card-bg: #ffffff; --text-color: #1d1d1f; --text-secondary-color: #555;
             --primary-color: #007aff; --green: #34c759; --red: #ff3b30; --orange: #ff9500;
@@ -35,86 +32,29 @@
                 --gradient-start: #1c1c1e;
             }
         }
-
-        /* Estilos base consistentes com a página principal */
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(180deg, var(--gradient-start) 0%, var(--bg-color) 250px);
-            color: var(--text-color);
-            margin: 0;
-            padding: 24px;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, var(--gradient-start) 0%, var(--bg-color) 250px); color: var(--text-color); margin: 0; padding: 24px; }
+        .container { width: 100%; max-width: 800px; margin: 0 auto; }
         h1, h2, h3 { color: var(--text-color); text-align: center; }
         h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 20px; }
-        
-        /* Estilo de Card unificado */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-        .card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0 0 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 25px; margin-bottom: 24px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: all 0.3s ease; }
+        .card h3 { font-size: 1.25rem; font-weight: 600; margin: 0 0 20px 0; display: flex; align-items: center; justify-content: center; }
         .card h3 span { font-size: 1.5rem; margin-right: 12px; }
-
-        /* Estilos para Dicas */
         .tip-card { border-left: 5px solid; margin-bottom: 20px; }
         .tip-card.alert { border-left-color: var(--red); }
         .tip-card.warning { border-left-color: var(--orange); }
         .tip-card.good { border-left-color: var(--green); }
         .tip-card h3 { justify-content: flex-start; text-align: left; }
-        .tip-card ol { padding-left: 20px; }
-        .tip-card li { margin-bottom: 10px; }
-
-        /* Estilo de Botão Unificado */
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            border: none;
-            transition: all 0.2s;
-        }
+        .tip-card ol { padding-left: 20px; } .tip-card li { margin-bottom: 10px; }
+        .button { display: inline-block; padding: 12px 24px; background-color: var(--primary-color); color: white; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; border: none; transition: all 0.2s; }
         .button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        
-        .price-up { color: var(--green); }
-        .price-down { color: var(--red); }
+        .price-up { color: var(--green); } .price-down { color: var(--red); }
         .crypto-grid { display: grid; grid-template-columns: 1fr 1fr; text-align: center; gap: 10px; }
         .simulador-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; text-align: left; }
-        .simulador-grid input, .simulador-grid select {
-            width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color);
-            font-size: 1rem; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color);
-        }
+        .simulador-grid input, .simulador-grid select { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
         .simulador-resultado { margin-top: 20px; padding: 15px; background-color: color-mix(in srgb, var(--primary-color) 8%, transparent); border-left: 4px solid var(--primary-color); border-radius: 8px; }
         .disclaimer { font-size: 0.8rem; color: var(--text-secondary-color); margin-top: 15px; text-align: center;}
-
-        /* Efeito de Loading Skeleton */
         .skeleton { animation: skeleton-loading 1s linear infinite alternate; }
-        @keyframes skeleton-loading {
-            from { background-color: color-mix(in srgb, var(--border-color) 50%, transparent); }
-            to { background-color: var(--border-color); }
-        }
+        @keyframes skeleton-loading { from { background-color: color-mix(in srgb, var(--border-color) 50%, transparent); } to { background-color: var(--border-color); } }
         .skeleton-text { width: 100%; height: 20px; margin-bottom: 10px; border-radius: 4px; }
     </style>
 </head>
@@ -122,17 +62,14 @@
     <div class="container">
         <a href="index.html" class="button" style="margin-bottom: 20px;">&larr; Voltar para a Calculadora</a>
         <h1>Dicas e Simuladores</h1>
-        
         <div id="crypto-widget" class="card">
             <h3><span>₿</span>Cotação do Bitcoin (BTC)</h3>
             <div class="skeleton skeleton-text"></div>
             <div class="skeleton skeleton-text" style="width: 80%;"></div>
         </div>
-
         <div id="tips-container">
             <p id="no-data" style="text-align:center; color: var(--text-secondary-color);">Nenhum dado encontrado para gerar dicas. Preencha os valores na página inicial primeiro.</p>
         </div>
-
         <div class="card">
             <h3><span>🏦</span> Simulador de Cofre (110% do CDI)</h3>
             <div class="simulador-grid">
@@ -144,193 +81,120 @@
             <div id="cdi-resultado" class="simulador-resultado" style="display:none;"></div>
             <p id="cdi-disclaimer" class="disclaimer">Simulação com base na taxa CDI atual. Não considera impostos. Apenas para fins educativos.</p>
         </div>
-
         <div class="card">
             <h3><span>📈</span> Simulador Histórico de Bitcoin</h3>
             <div class="simulador-grid">
                 <div><label for="btc-valor">Se eu tivesse investido (R$)</label><input type="number" id="btc-valor" placeholder="1000"></div>
-                <div><label for="btc-data">Quando?</label><select id="btc-data">
-                    <option value="1">1 ano atrás</option>
-                    <option value="3">3 anos atrás</option>
-                    <option value="5">5 anos atrás</option>
-                </select></div>
+                <div><label for="btc-data">Quando?</label><select id="btc-data"><option value="1">1 ano atrás</option><option value="3">3 anos atrás</option><option value="5">5 anos atrás</option></select></div>
             </div>
             <button id="btc-simular-btn" class="button" style="width: 100%;">Simular "E se?"</button>
             <div id="btc-resultado" class="simulador-resultado" style="display:none;"></div>
             <p class="disclaimer"><b>Importante:</b> Retornos passados não garantem retornos futuros. Criptomoedas são ativos de altíssimo risco.</p>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
             const data = JSON.parse(localStorage.getItem('financeData_current'));
             const categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-            // --- Lógica das Dicas (Mantida) ---
             function generateAllTips() {
                 const tipsContainer = document.getElementById('tips-container');
                 const noDataEl = document.getElementById('no-data');
-                
-                if (!data || (data.totalGastos <= 0 && data.totalRendas <= 0)) {
-                    noDataEl.style.display = 'block';
-                    return;
-                }
-
+                if (!data || (data.totalGastos <= 0 && data.totalRendas <= 0)) { noDataEl.style.display = 'block'; return; }
                 noDataEl.style.display = 'none';
-                
                 function createTipCard(icon, title, message, type = '') {
                     const card = document.createElement('div');
                     card.className = `card tip-card ${type}`;
                     card.innerHTML = `<h3><span>${icon}</span>${title}</h3><div>${message}</div>`;
                     tipsContainer.appendChild(card);
                 }
-
                 if (data.saldoFinal < 0) { createTipCard('🚨', 'Alerta Máximo: Saldo Negativo!', `Seu saldo está negativo em <strong>${formatCurrency(data.saldoFinal)}</strong>. Esta é a prioridade número 1. É crucial reduzir despesas imediatamente.`, 'alert'); }
-                
                 const cartaoCat = categories.find(c => c.label.toLowerCase().includes('cartão'));
                 if (cartaoCat && data[cartaoCat.id] && data.totalRendas > 0 && (data[cartaoCat.id] / data.totalRendas) > 0.3) { 
                     createTipCard('💳', `Foco em ${cartaoCat.label}`, `Seus gastos com ${cartaoCat.label} (<strong>${formatCurrency(data[cartaoCat.id])}</strong>) consomem <strong>${((data[cartaoCat.id] / data.totalRendas) * 100).toFixed(0)}%</strong> da sua renda. Este é um nível perigoso. Evite novas compras parceladas.`, 'warning');
                 }
-                
                 if (data.saldoFinal > 0) {
                     const investmentMessage = `<p>Seu saldo está positivo, parabéns! Use os simuladores abaixo para visualizar o potencial dos seus investimentos. Siga estes passos:</p><ol><li><strong>Construa sua Reserva de Emergência:</strong> Junte de 3 a 6 meses do seu custo de vida em um investimento seguro e de fácil acesso (como um que renda 100% do CDI ou mais).</li><li><strong>Defina Seus Objetivos:</strong> O que você quer alcançar com o dinheiro? Metas claras ajudam a escolher os melhores investimentos.</li><li><strong>Comece a Estudar e Investir:</strong> Entenda seu perfil de risco e comece a investir todo mês, mesmo que seja pouco.</li></ol>`;
                     createTipCard('🚀', 'Parabéns e Próximos Passos!', investmentMessage, 'good');
                 }
             }
-            
-            // --- Cotação de Cripto (CORRIGIDA E MELHORADA) ---
             async function fetchCryptoData() {
                 const cryptoWidget = document.getElementById('crypto-widget');
                 try {
-                    // Usando um endpoint mais confiável que traz tudo em uma chamada
                     const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=bitcoin');
                     if (!response.ok) throw new Error('Resposta da rede não foi OK');
                     const [btcData] = await response.json();
-
                     const currentPrice = btcData.current_price;
                     const variation = btcData.price_change_percentage_24h;
-                    
                     const variationClass = variation >= 0 ? 'price-up' : 'price-down';
                     const variationSign = variation >= 0 ? '▲' : '▼';
-
-                    const widgetHTML = `
-                        <h3><span>₿</span>Cotação do Bitcoin (BTC)</h3>
-                        <div class="crypto-grid">
-                            <div>
-                                <p style="margin: 5px 0; font-size: 0.9rem;">Preço Atual</p>
-                                <p style="font-size: 1.5rem; margin: 5px 0;"><strong>${formatCurrency(currentPrice)}</strong></p>
-                            </div>
-                            <div>
-                                <p style="margin: 5px 0; font-size: 0.9rem;">Variação (24h)</p>
-                                <p style="font-size: 1.5rem; margin: 5px 0;" class="${variationClass}">
-                                    <strong>${variationSign} ${variation.toFixed(2)}%</strong>
-                                </p>
-                            </div>
-                        </div>
-                        <p class="disclaimer">Fonte: CoinGecko. Não é recomendação de investimento.</p>
-                    `;
+                    const widgetHTML = `<h3><span>₿</span>Cotação do Bitcoin (BTC)</h3><div class="crypto-grid"><div><p style="margin: 5px 0; font-size: 0.9rem;">Preço Atual</p><p style="font-size: 1.5rem; margin: 5px 0;"><strong>${formatCurrency(currentPrice)}</strong></p></div><div><p style="margin: 5px 0; font-size: 0.9rem;">Variação (24h)</p><p style="font-size: 1.5rem; margin: 5px 0;" class="${variationClass}"><strong>${variationSign} ${variation.toFixed(2)}%</strong></p></div></div><p class="disclaimer">Fonte: CoinGecko. Não é recomendação de investimento.</p>`;
                     cryptoWidget.innerHTML = widgetHTML;
-
                 } catch (error) {
                     cryptoWidget.innerHTML = `<h3><span>₿</span>Cotação do Bitcoin (BTC)</h3><p>Não foi possível buscar a cotação no momento.</p>`;
                     console.error("Erro ao buscar dados do Bitcoin:", error);
                 }
             }
-
-            // --- Simulador CDI (AGORA COM DADOS REAIS) ---
             async function fetchCDIData() {
                 try {
-                    // API do Banco Central do Brasil para buscar o último valor da CDI
                     const response = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/1?formato=json');
                     if (!response.ok) throw new Error('Não foi possível buscar a taxa CDI.');
                     const data = await response.json();
                     const cdiDiaria = parseFloat(data[0].valor);
-                    // Convertendo a taxa diária para anual (aproximação)
                     return Math.pow(1 + (cdiDiaria / 100), 252) - 1;
                 } catch (error) {
                     console.error("Erro ao buscar CDI:", error);
-                    return 0.105; // Retorna um valor padrão de 10.5% em caso de falha
+                    return 0.105; 
                 }
             }
-
             document.getElementById('cdi-simular-btn').addEventListener('click', async () => {
                 const valorInicial = parseFloat(document.getElementById('cdi-inicial').value) || 0;
                 const aporteMensal = parseFloat(document.getElementById('cdi-aporte').value) || 0;
                 const meses = parseInt(document.getElementById('cdi-meses').value) || 0;
                 const resultadoEl = document.getElementById('cdi-resultado');
-                
                 if (meses === 0) return;
-
                 const taxaCDIAnual = await fetchCDIData();
-                const taxaAnual = taxaCDIAnual * 1.10; // 110% do CDI
+                const taxaAnual = taxaCDIAnual * 1.10;
                 const taxaMensal = Math.pow(1 + taxaAnual, 1/12) - 1;
-                
                 let total = valorInicial;
-                for (let i = 0; i < meses; i++) {
-                    total = total * (1 + taxaMensal) + aporteMensal;
-                }
-                
+                for (let i = 0; i < meses; i++) { total = total * (1 + taxaMensal) + aporteMensal; }
                 const totalInvestido = valorInicial + (aporteMensal * meses);
                 const juros = total - totalInvestido;
-
                 document.getElementById('cdi-disclaimer').textContent = `Simulação com taxa de 110% do CDI atual (aprox. ${(taxaAnual * 100).toFixed(2)}% ao ano). Não considera impostos.`;
-                resultadoEl.innerHTML = `
-                    <p>Total investido: <strong>${formatCurrency(totalInvestido)}</strong></p>
-                    <p>Juros ganhos: <strong>${formatCurrency(juros)}</strong></p>
-                    <p>Valor final acumulado: <strong style="font-size:1.2rem;">${formatCurrency(total)}</strong></p>`;
+                resultadoEl.innerHTML = `<p>Total investido: <strong>${formatCurrency(totalInvestido)}</strong></p><p>Juros ganhos: <strong>${formatCurrency(juros)}</strong></p><p>Valor final acumulado: <strong style="font-size:1.2rem;">${formatCurrency(total)}</strong></p>`;
                 resultadoEl.style.display = 'block';
             });
-            
-            // --- Simulador Bitcoin (CORRIGIDO) ---
             document.getElementById('btc-simular-btn').addEventListener('click', async () => {
                 const valorInvestido = parseFloat(document.getElementById('btc-valor').value) || 0;
                 const anosAtras = parseInt(document.getElementById('btc-data').value) || 0;
                 const resultadoEl = document.getElementById('btc-resultado');
-                
                 if (valorInvestido === 0 || anosAtras === 0) return;
-                
                 resultadoEl.innerHTML = `<p>Buscando dados históricos...</p>`;
                 resultadoEl.style.display = 'block';
-
                 try {
                     const startDate = new Date();
                     startDate.setFullYear(startDate.getFullYear() - anosAtras);
                     const dateString = `${startDate.getDate()}-${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
-                    
                     const [currentPriceResponse, historyPriceResponse] = await Promise.all([
                         fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl'),
                         fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/history?date=${dateString}&localization=false`)
                     ]);
-
                     if (!currentPriceResponse.ok || !historyPriceResponse.ok) throw new Error('Falha na comunicação com a API de preços.');
-
                     const currentPriceData = await currentPriceResponse.json();
                     const historyPriceData = await historyPriceResponse.json();
-
                     const currentPrice = currentPriceData?.bitcoin?.brl;
                     const startPrice = historyPriceData?.market_data?.current_price?.brl;
-                    
                     if (!currentPrice || !startPrice) throw new Error('Dados históricos não disponíveis para esta data. A API pode estar indisponível.');
-                    
                     const btcComprados = valorInvestido / startPrice;
                     const valorFinal = btcComprados * currentPrice;
                     const rendimento = valorFinal - valorInvestido;
                     const percentual = (rendimento / valorInvestido) * 100;
-
-                    resultadoEl.innerHTML = `
-                        <p>Valor do BTC na data: <strong>${formatCurrency(startPrice)}</strong></p>
-                        <p>Com ${formatCurrency(valorInvestido)}, você teria comprado <strong>${btcComprados.toFixed(6)} BTC</strong>.</p>
-                        <p>Hoje, esse valor seria: <strong class="${rendimento >= 0 ? 'price-up' : 'price-down'}" style="font-size:1.2rem;">${formatCurrency(valorFinal)}</strong></p>
-                        <p>Rendimento: <strong>${formatCurrency(rendimento)} (${percentual.toFixed(0)}%)</strong></p>`;
-
+                    resultadoEl.innerHTML = `<p>Valor do BTC na data: <strong>${formatCurrency(startPrice)}</strong></p><p>Com ${formatCurrency(valorInvestido)}, você teria comprado <strong>${btcComprados.toFixed(6)} BTC</strong>.</p><p>Hoje, esse valor seria: <strong class="${rendimento >= 0 ? 'price-up' : 'price-down'}" style="font-size:1.2rem;">${formatCurrency(valorFinal)}</strong></p><p>Rendimento: <strong>${formatCurrency(rendimento)} (${percentual.toFixed(0)}%)</strong></p>`;
                 } catch(e) {
                     resultadoEl.innerHTML = `<p class="price-down">Não foi possível obter os dados históricos para a simulação. A API gratuita pode estar temporariamente sobrecarregada. Tente novamente mais tarde.</p>`;
                     console.error("Erro na simulação BTC:", e);
                 }
             });
-
-            // Inicialização
             generateAllTips();
             fetchCryptoData();
         });

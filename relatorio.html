@@ -2,127 +2,191 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório Financeiro</title>
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background-color: #f0f2f5; 
-            color: #333; 
-            margin: 0; 
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #1877f2;
-            border-bottom: 2px solid #1877f2;
-            padding-bottom: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
-        td:last-child {
-            text-align: right;
-            font-weight: bold;
-        }
-        .summary-table td:first-child {
-            font-weight: bold;
-        }
-        .button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #1877f2;
-            color: white;
-            display: inline-block;
-        }
-        .toolbar { text-align: center; margin-bottom: 20px; }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Financeiro Mensal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512x512.png">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f9fc">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c1e">
 
-        @media print {
-            body { background-color: #fff; }
-            .toolbar { display: none; }
-            .container { box-shadow: none; padding: 0; }
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-color: #f7f9fc; --card-bg: #ffffff; --text-color: #1d1d1f; --text-secondary-color: #555;
+            --primary-color: #007aff; --green: #34c759; --red: #ff3b30; --orange: #ff9500;
+            --border-color: #e5e5ea; --input-bg: #fdfdfd; --shadow-color: rgba(0, 0, 0, 0.05);
+            --gradient-start: #f0f4ff;
         }
+        [data-theme='dark'] {
+            --bg-color: #000000; --card-bg: #1c1c1e; --text-color: #f5f5f7; --text-secondary-color: #aEaEaE;
+            --primary-color: #0a84ff; --green: #30d158; --red: #ff453a; --orange: #ff9f0a;
+            --border-color: #38383a; --input-bg: #2c2c1e; --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient-start: #1c1c1e;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme='light']) {
+                --bg-color: #000000; --card-bg: #1c1c1e; --text-color: #f5f5f7; --text-secondary-color: #aEaEaE;
+                --primary-color: #0a84ff; --green: #30d158; --red: #ff453a; --orange: #ff9f0a;
+                --border-color: #38383a; --input-bg: #2c2c1e; --shadow-color: rgba(0, 0, 0, 0.2);
+                --gradient-start: #1c1c1e;
+            }
+        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, var(--gradient-start) 0%, var(--bg-color) 250px); color: var(--text-color); margin: 0; padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; display: grid; gap: 24px; }
+        h1, h2 { text-align: center; color: var(--text-color); margin: 0; }
+        h1 { font-size: 2.25rem; font-weight: 700; }
+        h2 { font-size: 1.5rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border-color); text-align: left; }
+        th { font-weight: 600; color: var(--text-secondary-color); }
+        td:last-child { text-align: right; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        .summary-table td:first-child { font-weight: 600; }
+        .total-rendas { color: var(--green); } .total-gastos { color: var(--red); }
+        .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; background-color: var(--primary-color); color: white; text-decoration: none; transition: all 0.2s; }
+        .button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .theme-selector { display: flex; align-items: center; gap: 10px; }
+        .theme-selector label { font-weight: 500; color: var(--text-secondary-color); }
+        .theme-selector select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
+        .chart-container { position: relative; height: 300px; margin-top: 20px; }
+        .report-selector { display: flex; gap: 10px; align-items: center; justify-content: center; background-color: var(--input-bg); padding: 20px; border-radius: 12px; }
+        .report-selector input[type="month"] { padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color); font-size: 1rem; }
+        #report-content { display: grid; gap: 24px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="toolbar">
-            <button class="button" onclick="window.print()">Imprimir ou Salvar como PDF</button>
+            <a href="index.html" class="button">&larr; Voltar</a>
+            <div class="theme-selector">
+                <label for="theme-select">🎨 Tema:</label>
+                <select id="theme-select"><option value="auto">Automático</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
+            </div>
+            <button class="button" onclick="window.print()"><i data-lucide="printer"></i> Imprimir/PDF</button>
         </div>
-        
-        <h1 id="report-title">Relatório Financeiro</h1>
-        
-        <h2>Rendas</h2>
-        <table id="rendas-table">
-            <thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
-            <tbody></tbody>
-        </table>
-        
-        <h2>Gastos</h2>
-        <table id="gastos-table">
-            <thead><tr><th>Categoria</th><th>Valor</th></tr></thead>
-            <tbody></tbody>
-        </table>
-        
-        <h2>Resumo</h2>
-        <table id="summary-table" class="summary-table">
-            <tbody></tbody>
-        </table>
+        <div class="card">
+            <h1 id="report-title">Relatório Financeiro Mensal</h1>
+            <div class="report-selector">
+                <label for="month-select" style="font-weight: 500;">Selecione o Mês:</label>
+                <input type="month" id="month-select">
+                <button id="generate-report-btn" class="button">Gerar Relatório</button>
+            </div>
+        </div>
+        <div id="report-content" style="display: none;">
+            <div class="card">
+                <h2>Resumo Geral</h2>
+                <table id="summary-table" class="summary-table"><tbody></tbody></table>
+                <div class="chart-container"><canvas id="gastosChart"></canvas></div>
+            </div>
+            <div class="card">
+                <h2>Detalhamento das Rendas</h2>
+                <table id="rendas-table"><thead><tr><th>Categoria</th><th>Valor</th></tr></thead><tbody></tbody></table>
+            </div>
+            <div class="card">
+                <h2>Detalhamento dos Gastos</h2>
+                <table id="gastos-table"><thead><tr><th>Categoria</th><th>Valor</th></tr></thead><tbody></tbody></table>
+            </div>
+        </div>
+        <div id="no-data-message" class="card" style="text-align: center; color: var(--text-secondary-color);"></div>
     </div>
 
     <script>
-        window.onload = function() {
-            const data = JSON.parse(localStorage.getItem('financeData_current'));
-            const categories = JSON.parse(localStorage.getItem('categories')) || [];
-            const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                let gastosChartInstance = null;
+                const reportContent = document.getElementById('report-content');
+                const noDataMessage = document.getElementById('no-data-message');
+                const monthSelect = document.getElementById('month-select');
 
-            if (!data) {
-                document.body.innerHTML = '<h1>Nenhum dado encontrado. Por favor, preencha a calculadora primeiro.</h1>';
-                return;
+                function generateReport() {
+                    const selectedMonth = monthSelect.value;
+                    if (!selectedMonth) {
+                        noDataMessage.textContent = 'Por favor, selecione um mês para gerar o relatório.';
+                        reportContent.style.display = 'none';
+                        return;
+                    }
+                    const [year, month] = selectedMonth.split('-');
+                    const monthIndex = parseInt(month, 10) - 1;
+                    const storageKey = `historico_${year}-${monthIndex}`;
+                    const data = JSON.parse(localStorage.getItem(storageKey));
+                    const categories = JSON.parse(localStorage.getItem('categories')) || [];
+
+                    if (!data) {
+                        noDataMessage.innerHTML = `Nenhum dado de resumo encontrado para <strong>${new Date(year, monthIndex).toLocaleString('pt-BR', {month: 'long', year: 'numeric'})}</strong>.<br>Lembre-se de "Fechar o Mês" na página principal.`;
+                        reportContent.style.display = 'none';
+                        noDataMessage.style.display = 'block';
+                        return;
+                    }
+                    
+                    reportContent.style.display = 'grid';
+                    noDataMessage.style.display = 'none';
+                    document.getElementById('report-title').innerText = `Relatório de ${new Date(year, monthIndex).toLocaleString('pt-BR', {month: 'long', year: 'numeric'})}`;
+                    
+                    const summaryTbody = document.querySelector('#summary-table tbody');
+                    const saldoFinalClass = data.saldoFinal >= 0 ? 'total-rendas' : 'total-gastos';
+                    summaryTbody.innerHTML = `<tr><td>Total de Rendas</td><td class="total-rendas">${formatCurrency(data.totalRendas)}</td></tr><tr><td>Total de Gastos</td><td class="total-gastos">${formatCurrency(data.totalGastos)}</td></tr><tr><td>Saldo Final</td><td class="${saldoFinalClass}">${formatCurrency(data.saldoFinal)}</td></tr>`;
+                    
+                    const rendasTbody = document.querySelector('#rendas-table tbody');
+                    rendasTbody.innerHTML = '';
+                    const rendasRegistradas = categories.filter(c => c.type === 'rendas' && data[c.id] > 0);
+                    if (rendasRegistradas.length > 0) { rendasRegistradas.forEach(item => rendasTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`);
+                    } else { rendasTbody.innerHTML = '<tr><td colspan="2">Nenhuma renda registrada neste mês.</td></tr>'; }
+
+                    const gastosTbody = document.querySelector('#gastos-table tbody');
+                    gastosTbody.innerHTML = '';
+                    const gastosRegistrados = categories.filter(c => c.type === 'gastos' && data[c.id] > 0);
+                    if (gastosRegistrados.length > 0) { gastosRegistrados.forEach(item => gastosTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`);
+                    } else { gastosTbody.innerHTML = '<tr><td colspan="2">Nenhum gasto registrado neste mês.</td></tr>'; }
+                    
+                    const chartCanvas = document.getElementById('gastosChart');
+                    const chartLabels = gastosRegistrados.map(item => item.label);
+                    const chartData = gastosRegistrados.map(item => data[item.id]);
+
+                    if (gastosChartInstance) { gastosChartInstance.destroy(); }
+                    if (chartData.length > 0) {
+                        chartCanvas.parentElement.style.display = 'block';
+                        gastosChartInstance = new Chart(chartCanvas, {
+                            type: 'doughnut',
+                            data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00', '#5856d6', '#af52de', '#34c759', '#007aff'], borderColor: 'var(--card-bg)', borderWidth: 4, hoverOffset: 8 }] },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'var(--text-secondary-color)', font: { size: 14 } } } } }
+                        });
+                    } else { chartCanvas.parentElement.style.display = 'none'; }
+                }
+
+                const lastClosedKey = localStorage.getItem('lastClosedSummaryKey');
+                if (lastClosedKey) {
+                    const [year, monthIndex] = lastClosedKey.split('_')[1].split('-');
+                    const month = (parseInt(monthIndex, 10) + 1).toString().padStart(2, '0');
+                    monthSelect.value = `${year}-${month}`;
+                    generateReport();
+                } else {
+                    noDataMessage.textContent = 'Nenhum resumo mensal foi encontrado. Feche um mês na página principal para começar.';
+                    reportContent.style.display = 'none';
+                }
+
+                document.getElementById('generate-report-btn').addEventListener('click', generateReport);
+                
+                const themeSelect = document.getElementById('theme-select');
+                const userTheme = localStorage.getItem('theme');
+                const applyTheme = (theme) => {
+                    if (theme === 'auto') document.documentElement.removeAttribute('data-theme');
+                    else document.documentElement.setAttribute('data-theme', theme);
+                };
+                if (userTheme) { themeSelect.value = userTheme; applyTheme(userTheme); }
+                themeSelect.addEventListener('change', (e) => { const selectedTheme = e.target.value; localStorage.setItem('theme', selectedTheme); applyTheme(selectedTheme); });
+                lucide.createIcons();
+            } catch(error) {
+                document.body.innerHTML = '<h1>Ocorreu um erro ao processar a página.</h1>';
+                console.error("Erro na página de relatório:", error);
             }
-
-            const rendasTbody = document.querySelector('#rendas-table tbody');
-            categories.filter(c => c.type === 'rendas').forEach(item => {
-                if(data[item.id] > 0) {
-                    rendasTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`;
-                }
-            });
-
-            const gastosTbody = document.querySelector('#gastos-table tbody');
-            categories.filter(c => c.type === 'gastos').forEach(item => {
-                if(data[item.id] > 0) {
-                    gastosTbody.innerHTML += `<tr><td>${item.label}</td><td>${formatCurrency(data[item.id])}</td></tr>`;
-                }
-            });
-
-            const summaryTbody = document.querySelector('#summary-table tbody');
-            summaryTbody.innerHTML = `
-                <tr><td>Total de Rendas</td><td>${formatCurrency(data.totalRendas)}</td></tr>
-                <tr><td>Total de Gastos</td><td>${formatCurrency(data.totalGastos)}</td></tr>
-                <tr><td>Saldo Final</td><td>${formatCurrency(data.saldoFinal)}</td></tr>
-            `;
-
-            document.getElementById('report-title').innerText += ` - ${new Date().toLocaleDateString('pt-BR')}`;
-        };
+        });
     </script>
 </body>
 </html>

@@ -92,7 +92,7 @@
         <div class="card results"><div class="result-item"><span>Total de Rendas:</span><span id="totalRendas">R$ 0,00</span></div><div class="result-item"><span>Total de Gastos:</span><span id="totalGastos">R$ 0,00</span></div><div class="result-item"><span>Saldo Final:</span><span id="saldoFinal">R$ 0,00</span></div></div>
         <div class="main-content"><div class="card"><h2>Rendas (+)</h2><div id="rendas-list"></div><button id="addRendaBtn" class="button add-category-btn">+ Nova Renda</button></div><div class="card"><h2>Gastos (-)</h2><div id="gastos-list"></div><button id="addGastoBtn" class="button add-category-btn">+ Novo Gasto</button></div></div>
         <div class="card actions">
-            <a href="dicas.html" target="_blank" id="dicasBtn" class="button primary-action"><i data-lucide="lightbulb"></i> <span>Ver Dicas</span></a>
+            <a href="dicas.html" target="_blank" class="button primary-action"><i data-lucide="lightbulb"></i> <span>Ver Dicas</span></a>
             <a href="relatorio.html" target="_blank" class="button info-action"><i data-lucide="bar-chart-3"></i> <span>Ver Relatório</span></a>
             <button id="saveBtn" class="button tertiary-action"><i data-lucide="save"></i> <span>Salvar Dados</span></button>
             <button id="closeMonthBtn" class="button warning-action"><i data-lucide="archive"></i> <span>Fechar Mês</span></button>
@@ -101,13 +101,9 @@
         </div>
     </div>
     <dialog id="category-modal"><button class="close-button" onclick="this.closest('dialog').close()"><i data-lucide="x"></i></button><h2 id="modal-title">Nova Categoria</h2><form id="category-form"><input type="hidden" id="modal-category-id"><input type="hidden" id="modal-category-type"><div class="form-group"><label for="modal-category-name">Nome da Categoria</label><input type="text" id="modal-category-name" required></div><div class="form-group"><label for="modal-category-budget">Orçamento (Meta Mensal, opcional)</label><input type="text" id="modal-category-budget" placeholder="Ex: 500,00"></div><div class="form-group checkbox-group"><input type="checkbox" id="modal-category-recurring"><label for="modal-category-recurring">É um lançamento recorrente?</label></div><div class="modal-actions"><button type="button" class="button danger-action" onclick="this.closest('dialog').close()">Cancelar</button><button type="submit" class="button primary-action">Salvar</button></div></form></dialog>
-
     <footer>
-        <p>Desenvolvido por Gustavo Silva</p>
-        <a href="https://github.com/SEU-USUARIO-AQUI" target="_blank">
-            <i data-lucide="github"></i>
-            <span>Ver no GitHub</span>
-        </a>
+        <p>Desenvolvido por Flavio Rafael</p>
+        <a href="https://github.com/Flavero85" target="_blank"><i data-lucide="github"></i><span>Ver no GitHub</span></a>
     </footer>
     
     <script>
@@ -300,31 +296,15 @@
                 });
             };
             
-            // --- FUNÇÃO CENTRAL DE EVENTOS (CORRIGIDA E COMPLETA) ---
+            // --- FUNÇÃO CENTRAL DE EVENTOS ---
             const setupEventListeners = () => {
-                // Link para a página de Dicas
-                document.getElementById('dicasBtn').addEventListener('click', (e) => {
-                    // Previne o comportamento padrão do link, caso queira adicionar outra lógica no futuro
-                    // e.preventDefault(); 
-                    // No momento, apenas deixamos o link funcionar normalmente.
-                });
-
-                // Botões de ação principais
                 document.getElementById('quickAddBtn').addEventListener('click', handleQuickAdd);
                 document.getElementById('addRendaBtn').addEventListener('click', () => openCategoryModal('add', 'rendas'));
                 document.getElementById('addGastoBtn').addEventListener('click', () => openCategoryModal('add', 'gastos'));
                 document.getElementById('saveBtn').addEventListener('click', (e) => { calculateAndSave(); showSaveFeedback(e.currentTarget); });
                 document.getElementById('closeMonthBtn').addEventListener('click', closeMonth);
                 document.getElementById('resetAllBtn').addEventListener('click', handleHardReset);
-
-                // Listener para atualização automática de valores ao digitar
-                document.querySelector('.container').addEventListener('input', (e) => { 
-                    if (e.target.classList.contains('valor-input')) {
-                        calculateAndSave();
-                    } 
-                });
-
-                // Delegação de eventos para ícones de editar/deletar
+                document.querySelector('.container').addEventListener('input', (e) => { if (e.target.classList.contains('valor-input')) { calculateAndSave(); } });
                 const handleListClick = (event) => {
                     const icon = event.target.closest('.icon'); if (!icon) return;
                     const action = icon.dataset.action; const id = icon.dataset.id; if (!action || !id) return;
@@ -342,8 +322,6 @@
             setupEventListeners();
             loadPreviousMonthSummary(); 
             applyInputMask(document.getElementById('quickAddValue'));
-            
-            // Lógica do Tema
             const themeSelect = document.getElementById('theme-select');
             const userTheme = localStorage.getItem('theme');
             const applyTheme = (theme) => { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); };
