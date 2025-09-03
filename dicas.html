@@ -95,25 +95,43 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            const data = JSON.parse(localStorage.getItem('financeData_current'));
+            const DATA_KEY = 'financeData_v2'; // Chave de armazenamento atualizada
+            const data = JSON.parse(localStorage.getItem(DATA_KEY));
             const categories = JSON.parse(localStorage.getItem('categories')) || [];
             function generateAllTips() {
                 const tipsContainer = document.getElementById('tips-container');
                 const noDataEl = document.getElementById('no-data');
-                if (!data || (data.totalGastos <= 0 && data.totalRendas <= 0)) { noDataEl.style.display = 'block'; return; }
+                // Calcula o total de rendas e gastos a partir dos dados brutos para ter certeza
+                let totalRendas = 0;
+                let totalGastos = 0;
+                if (data) {
+                    const allCategories = JSON.parse(localStorage.getItem('categories')) || [];
+                    allCategories.forEach(cat => {
+                        const value = data[cat.id] || 0;
+                        if(cat.type === 'rendas') totalRendas += value;
+                        else totalGastos += value;
+                    });
+                }
+                const saldoFinal = totalRendas - totalGastos;
+
+                if (!data || (totalGastos <= 0 && totalRendas <= 0)) { noDataEl.style.display = 'block'; return; }
+                
                 noDataEl.style.display = 'none';
+                
                 function createTipCard(icon, title, message, type = '') {
                     const card = document.createElement('div');
                     card.className = `card tip-card ${type}`;
                     card.innerHTML = `<h3><span>${icon}</span>${title}</h3><div>${message}</div>`;
                     tipsContainer.appendChild(card);
                 }
-                if (data.saldoFinal < 0) { createTipCard('🚨', 'Alerta Máximo: Saldo Negativo!', `Seu saldo está negativo em <strong>${formatCurrency(data.saldoFinal)}</strong>. Esta é a prioridade número 1. É crucial reduzir despesas imediatamente.`, 'alert'); }
+                
+                if (saldoFinal < 0) { createTipCard('🚨', 'Alerta Máximo: Saldo Negativo!', `Seu saldo está negativo em <strong>${formatCurrency(saldoFinal)}</strong>. Esta é a prioridade número 1. É crucial reduzir despesas imediatamente.`, 'alert'); }
+                
                 const cartaoCat = categories.find(c => c.label.toLowerCase().includes('cartão'));
-                if (cartaoCat && data[cartaoCat.id] && data.totalRendas > 0 && (data[cartaoCat.id] / data.totalRendas) > 0.3) { 
-                    createTipCard('💳', `Foco em ${cartaoCat.label}`, `Seus gastos com ${cartaoCat.label} (<strong>${formatCurrency(data[cartaoCat.id])}</strong>) consomem <strong>${((data[cartaoCat.id] / data.totalRendas) * 100).toFixed(0)}%</strong> da sua renda. Este é um nível perigoso. Evite novas compras parceladas.`, 'warning');
+                if (cartaoCat && data[cartaoCat.id] && totalRendas > 0 && (data[cartaoCat.id] / totalRendas) > 0.3) { 
+                    createTipCard('💳', `Foco em ${cartaoCat.label}`, `Seus gastos com ${cartaoCat.label} (<strong>${formatCurrency(data[cartaoCat.id])}</strong>) consomem <strong>${((data[cartaoCat.id] / totalRendas) * 100).toFixed(0)}%</strong> da sua renda. Este é um nível perigoso. Evite novas compras parceladas.`, 'warning');
                 }
-                if (data.saldoFinal > 0) {
+                if (saldoFinal > 0) {
                     const investmentMessage = `<p>Seu saldo está positivo, parabéns! Use os simuladores abaixo para visualizar o potencial dos seus investimentos. Siga estes passos:</p><ol><li><strong>Construa sua Reserva de Emergência:</strong> Junte de 3 a 6 meses do seu custo de vida em um investimento seguro e de fácil acesso (como um que renda 100% do CDI ou mais).</li><li><strong>Defina Seus Objetivos:</strong> O que você quer alcançar com o dinheiro? Metas claras ajudam a escolher os melhores investimentos.</li><li><strong>Comece a Estudar e Investir:</strong> Entenda seu perfil de risco e comece a investir todo mês, mesmo que seja pouco.</li></ol>`;
                     createTipCard('🚀', 'Parabéns e Próximos Passos!', investmentMessage, 'good');
                 }
