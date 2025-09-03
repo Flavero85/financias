@@ -1,11 +1,10 @@
-const CACHE_NAME = 'financeiro-pro-cache-v3'; // Mudei a versão para garantir a atualização
+const CACHE_NAME = 'financeiro-pro-cache-v2'; // Mudei a versão para garantir a atualização
 const URLS_TO_CACHE = [
   './',
   './index.html',
   './relatorio.html',
   './dicas.html',
-  './icon-192x192.png',
-  './icon-512x512.png'
+  './icon.png'
 ];
 
 // Instalação do Service Worker e cache dos arquivos
@@ -34,7 +33,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Limpa caches antigos quando uma nova versão do service worker é ativada
+// Limpa caches antigos
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
